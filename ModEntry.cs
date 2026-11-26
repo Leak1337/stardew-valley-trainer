@@ -28,37 +28,14 @@ public sealed class ModEntry : Mod
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (!CanUseTrainer)
+        if (e.Button != SButton.F5 || !CanUseTrainer)
             return;
 
-        Farmer player = Game1.player;
-        switch (e.Button)
-        {
-            case SButton.F5:
-                Game1.activeClickableMenu = new TrainerMenu(this);
-                break;
-            case SButton.F6:
-                int added = AddGold(10_000);
-                Game1.showGlobalMessage(added > 0 ? $"+{added:N0} Gold" : "Goldlimit erreicht");
-                break;
-            case SButton.F7:
-                player.health = player.maxHealth;
-                Game1.showGlobalMessage("Gesundheit aufgefuellt");
-                break;
-            case SButton.F8:
-                player.Stamina = player.MaxStamina;
-                Game1.showGlobalMessage("Ausdauer aufgefuellt");
-                break;
-            case SButton.F9:
-                FreezeTime = !FreezeTime;
-                Game1.showGlobalMessage(FreezeTime ? "Spielzeit eingefroren" : "Spielzeit läuft weiter");
-                break;
-            default:
-                return;
-        }
-
+        Game1.activeClickableMenu = new TrainerMenu(this);
         Helper.Input.Suppress(e.Button);
     }
+
+    internal string Translate(string key, object? tokens = null) => Helper.Translation.Get(key, tokens).ToString();
 
     internal static int AddGold(int amount)
     {

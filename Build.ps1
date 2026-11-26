@@ -40,4 +40,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Build failed with exit code $LASTEXITCODE."
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'manifest.json') -Destination $destination
+$translations = Join-Path $destination 'i18n'
+New-Item -ItemType Directory -Force -Path $translations | Out-Null
+Get-ChildItem -LiteralPath (Join-Path $PSScriptRoot 'i18n') -Filter '*.json' -File | Copy-Item -Destination $translations
 Write-Output $destination

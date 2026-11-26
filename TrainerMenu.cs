@@ -13,8 +13,8 @@ namespace StardewValleyTrainer;
 
 internal sealed class TrainerMenu : IClickableMenu
 {
-    private static readonly string[] Tabs = { "Spieler", "Welt", "Items", "Farm", "Fortschritt" };
-    private static readonly string[] Skills = { "Landwirtschaft", "Angeln", "Bergbau", "Sammeln", "Kampf" };
+    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends" };
+    private static readonly string[] Skills = { "skill.farming", "skill.fishing", "skill.mining", "skill.foraging", "skill.combat" };
     private static readonly Color Background = new(17, 29, 26);
     private static readonly Color Surface = new(25, 43, 37);
     private static readonly Color Hover = new(41, 65, 54);
@@ -35,9 +35,11 @@ internal sealed class TrainerMenu : IClickableMenu
     private int itemOffset;
     private int quantity = 1;
     private int qualityIndex;
+    private int friendIndex;
+    private NPC[]? friends;
     private const int ItemRows = 5;
     private static readonly int[] Qualities = { 0, 1, 2, 4 };
-    private static readonly string[] QualityNames = { "Normal", "Silber", "Gold", "Iridium" };
+    private static readonly string[] QualityNames = { "quality.normal", "quality.silver", "quality.gold", "quality.iridium" };
 
     public TrainerMenu(ModEntry mod)
     {
@@ -68,7 +70,7 @@ internal sealed class TrainerMenu : IClickableMenu
 
     public override void receiveKeyPress(Keys key)
     {
-        if (key == Keys.Escape || key == Keys.F5)
+        if (key == Keys.Escape)
         {
             Close();
             return;
@@ -83,6 +85,8 @@ internal sealed class TrainerMenu : IClickableMenu
         if (tab == 2)
             MoveItems(direction > 0 ? -1 : 1);
     }
+
+    private string T(string key, object? tokens = null) => mod.Translate(key, tokens);
 
     private void Close()
     {
@@ -116,7 +120,7 @@ internal sealed class TrainerMenu : IClickableMenu
         {
             int current = i;
             Button(batch, new Rectangle(left + i * tabWidth, y + 64, tabWidth - 5, 38),
-                Tabs[i], () => { tab = current; status = ""; }, tab == i);
+                T(Tabs[i]), () => { tab = current; status = ""; }, tab == i);
         }
 
         int top = y + 115;
@@ -127,41 +131,49 @@ internal sealed class TrainerMenu : IClickableMenu
             case 2: DrawItems(batch, left, top, contentWidth, row); break;
             case 3: DrawFarm(batch, left, top, contentWidth, row); break;
             case 4: DrawProgress(batch, left, top, contentWidth, row); break;
+            case 5: DrawFriends(batch, left, top, contentWidth, row); break;
         }
 
         int footer = y + height - 43;
         Fill(batch, new Rectangle(left, footer, contentWidth, 1), Border);
-        Text(batch, status.Length == 0 ? "F5 / Esc  Schließen" : status, left, footer + 9, status.Length == 0 ? Muted : Gold, contentWidth);
+        Text(batch, status.Length == 0 ? T("menu.close") : status, left, footer + 9, status.Length == 0 ? Muted : Gold, contentWidth);
         drawMouse(batch);
     }
 
     private void DrawPlayer(SpriteBatch batch, int x, int y, int width, int row)
     {
         Farmer player = Game1.player;
-        Text(batch, $"Gold  {player.Money:N0}     LP  {player.health}/{player.maxHealth}     Energie  {Math.Ceiling(player.Stamina)}/{player.MaxStamina}", x, y + 6, Gold, width);
-        Pair(batch, x, y + row, width, row, "+10.000 Gold", () => GiveGold(10_000), "+100.000 Gold", () => GiveGold(100_000));
-        Pair(batch, x, y + row * 2, width, row, "Gesundheit auffüllen", () => { player.health = player.maxHealth; status = "Gesundheit aufgefüllt."; },
-            "Ausdauer auffüllen", () => { player.Stamina = player.MaxStamina; status = "Ausdauer aufgefüllt."; });
-        Pair(batch, x, y + row * 3, width, row, $"Gesundheit halten · {OnOff(mod.KeepHealthy)}", () => mod.KeepHealthy = !mod.KeepHealthy,
-            $"Ausdauer halten · {OnOff(mod.KeepEnergized)}", () => mod.KeepEnergized = !mod.KeepEnergized, mod.KeepHealthy, mod.KeepEnergized);
-        Button(batch, new Rectangle(x, y + row * 4, width, row - 6), $"Rucksack erweitern · {player.MaxItems} Plätze", ExpandBackpack);
-        Text(batch, "F6  Gold     F7  Gesundheit     F8  Ausdauer", x, y + row * 5 + 8, Muted, width);
+        Text(batch, T("player.stats", new { gold = player.Money.ToString("N0"), health = player.health, maxHealth = player.maxHealth, energy = Math.Ceiling(player.Stamina), maxEnergy = player.MaxStamina }), x, y + 6, Gold, width);
+        Pair(batch, x, y + row, width, row, T("player.gold-small"), () => GiveGold(10_000), T("player.gold-large"), () => GiveGold(100_000));
+        Pair(batch, x, y + row * 2, width, row, T("player.heal"), () => { player.health = player.maxHealth; status = T("player.healed"); },
+            T("player.energy"), () => { player.Stamina = player.MaxStamina; status = T("player.energized"); });
+        Pair(batch, x, y + row * 3, width, row, T("player.keep-health", new { state = OnOff(mod.KeepHealthy) }), () => mod.KeepHealthy = !mod.KeepHealthy,
+            T("player.keep-energy", new { state = OnOff(mod.KeepEnergized) }), () => mod.KeepEnergized = !mod.KeepEnergized, mod.KeepHealthy, mod.KeepEnergized);
+        Button(batch, new Rectangle(x, y + row * 4, width, row - 6), T("player.backpack", new { slots = player.MaxItems }), ExpandBackpack);
     }
 
     private void DrawWorld(SpriteBatch batch, int x, int y, int width, int row)
     {
         int time = Game1.timeOfDay;
-        Text(batch, $"Tag {Game1.dayOfMonth}  ·  Jahr {Game1.year}  ·  {time / 100:00}:{time % 100:00}", x, y + 6, Gold, width);
-        Button(batch, new Rectangle(x, y + row, width, row - 6), $"Spielzeit einfrieren · {OnOff(mod.FreezeTime)}  [F9]",
+        Text(batch, T("world.clock", new { day = Game1.dayOfMonth, year = Game1.year, time = $"{time / 100:00}:{time % 100:00}" }), x, y + 6, Gold, width);
+        Button(batch, new Rectangle(x, y + row, width, row - 6), T("world.freeze", new { state = OnOff(mod.FreezeTime) }),
             () => mod.FreezeTime = !mod.FreezeTime, mod.FreezeTime);
-        Text(batch, "Schnellreise", x, y + row * 2 + 6, Mint, width);
-        Pair(batch, x, y + row * 3, width, row, "Bauernhof", WarpFarm,
-            "Pelikan-Stadt", () => Warp("Town", 35, 57));
-        Pair(batch, x, y + row * 4, width, row, "Strand", () => Warp("Beach", 20, 4),
-            "Minen-Eingang", () => Warp("Mine", 18, 13));
-        Pair(batch, x, y + row * 5, width, row, "Bahnhof*", () => WarpRailroad(),
-            "Bus-Haltestelle", () => Warp("BusStop", 14, 23));
-        Text(batch, "* Ab Sommer des ersten Jahres", x, y + row * 6 + 4, Muted, width);
+        Pair(batch, x, y + row * 2, width, row, T("world.sun"), () => SetWeather("Sun", T("world.sun")),
+            T("world.rain"), () => SetWeather("Rain", T("world.rain")));
+        Pair(batch, x, y + row * 3, width, row, T("world.travel.farm"), WarpFarm,
+            T("world.travel.town"), () => Warp("Town", 35, 57));
+        Pair(batch, x, y + row * 4, width, row, T("world.travel.beach"), () => Warp("Beach", 20, 4),
+            T("world.travel.mine"), () => Warp("Mine", 18, 13));
+        Pair(batch, x, y + row * 5, width, row, T("world.travel.railroad"), () => WarpRailroad(),
+            T("world.travel.bus"), () => Warp("BusStop", 14, 23));
+        Text(batch, T("world.railroad.note"), x, y + row * 6 + 4, Muted, width);
+    }
+
+    private void SetWeather(string weather, string message)
+    {
+        Game1.weatherForTomorrow = weather;
+        Game1.netWorldState.Value.GetWeatherForLocation("Default").WeatherForTomorrow = weather;
+        status = message;
     }
 
     private void DrawItems(SpriteBatch batch, int x, int y, int width, int row)
@@ -173,20 +185,20 @@ internal sealed class TrainerMenu : IClickableMenu
         search.Width = searchWidth;
         search.Draw(batch);
         if (search.Text.Length == 0 && !search.Selected)
-            Text(batch, "Name oder Item-ID suchen", x + 10, y + 8, Surface, searchWidth - 20);
+            Text(batch, T("items.search"), x + 10, y + 8, Surface, searchWidth - 20);
 
         int optionX = x + searchWidth + 9;
         int optionWidth = (width - searchWidth - 27) / 3;
-        Button(batch, new Rectangle(optionX, y, optionWidth, row - 5), $"Menge {quantity}", () =>
+        Button(batch, new Rectangle(optionX, y, optionWidth, row - 5), T("items.quantity", new { count = quantity }), () =>
             quantity = quantity switch { 1 => 10, 10 => 50, 50 => 100, 100 => 999, _ => 1 });
         Button(batch, new Rectangle(optionX + optionWidth + 6, y, optionWidth, row - 5),
-            QualityNames[qualityIndex], () => qualityIndex = (qualityIndex + 1) % Qualities.Length);
-        Button(batch, new Rectangle(optionX + 2 * (optionWidth + 6), y, optionWidth, row - 5), "Suche leeren",
+            T(QualityNames[qualityIndex]), () => qualityIndex = (qualityIndex + 1) % Qualities.Length);
+        Button(batch, new Rectangle(optionX + 2 * (optionWidth + 6), y, optionWidth, row - 5), T("items.clear"),
             () => search.Text = "");
 
         int listY = y + Math.Max(row, search.Height) + 5;
         if (results.Length == 0)
-            Text(batch, "Keine passenden Items.", x, listY + 6, Muted, width);
+            Text(batch, T("items.empty"), x, listY + 6, Muted, width);
         for (int i = 0; i < ItemRows && itemOffset + i < results.Length; i++)
         {
             ParsedItemData item = results[itemOffset + i];
@@ -203,47 +215,80 @@ internal sealed class TrainerMenu : IClickableMenu
         int controlsY = listY + ItemRows * row;
         Button(batch, new Rectangle(x, controlsY, 68, row - 5), "<", () => MoveItems(-ItemRows));
         Button(batch, new Rectangle(x + width - 68, controlsY, 68, row - 5), ">", () => MoveItems(ItemRows));
-        string range = results.Length == 0 ? "0 Treffer" : $"{itemOffset + 1}–{Math.Min(itemOffset + ItemRows, results.Length)} von {results.Length}";
+        string range = results.Length == 0 ? T("items.zero") : T("items.range", new { start = itemOffset + 1, end = Math.Min(itemOffset + ItemRows, results.Length), total = results.Length });
         Text(batch, range, x + 82, controlsY + 4, Muted, width - 164);
     }
 
     private void DrawFarm(SpriteBatch batch, int x, int y, int width, int row)
     {
-        Text(batch, "Felder am aktuellen Ort", x, y + 6, Mint, width);
-        Button(batch, new Rectangle(x, y + row, width, row - 6), "Gepflanzte Felder gießen", () => TendCrops(false));
-        Button(batch, new Rectangle(x, y + row * 2, width, row - 6), "Lebende Kulturen erntereif machen", () => TendCrops(true));
-        Text(batch, "Wirkt auf bepflanzten Boden, auch im Gewächshaus.", x, y + row * 3 + 8, Muted, width);
+        Text(batch, T("farm.heading"), x, y + 6, Mint, width);
+        Button(batch, new Rectangle(x, y + row, width, row - 6), T("farm.water"), () => TendCrops(false));
+        Button(batch, new Rectangle(x, y + row * 2, width, row - 6), T("farm.grow"), () => TendCrops(true));
+        Text(batch, T("farm.note"), x, y + row * 3 + 8, Muted, width);
     }
 
     private void DrawProgress(SpriteBatch batch, int x, int y, int width, int row)
     {
-        Text(batch, "Fähigkeiten", x, y + 6, Mint, width);
+        Text(batch, T("progress.heading"), x, y + 6, Mint, width);
         Farmer player = Game1.player;
         for (int i = 0; i < Skills.Length; i++)
         {
             int skill = i;
             int lineY = y + row * (i + 1);
-            Text(batch, $"{Skills[i]}  ·  {player.experiencePoints[i]:N0} EP", x, lineY + 6, Ink, width * 3 / 5);
+            Text(batch, T("progress.xp", new { skill = T(Skills[i]), experience = player.experiencePoints[i].ToString("N0") }), x, lineY + 6, Ink, width * 3 / 5);
             Button(batch, new Rectangle(x + width * 2 / 3, lineY, width - width * 2 / 3, row - 6),
-                "+1.000 EP", () => GainExperience(skill));
+                T("progress.gain"), () => GainExperience(skill));
         }
     }
 
-    private void GiveGold(int amount) => status = $"+{ModEntry.AddGold(amount):N0} Gold";
+    private void DrawFriends(SpriteBatch batch, int x, int y, int width, int row)
+    {
+        friends ??= Game1.player.friendshipData.Keys
+            .Select(name => Game1.getCharacterFromName(name))
+            .OfType<NPC>()
+            .Where(npc => npc.IsVillager)
+            .OrderBy(npc => npc.displayName)
+            .ToArray();
+        if (friends.Length == 0)
+        {
+            Text(batch, T("friends.empty"), x, y + 6, Muted, width);
+            return;
+        }
 
-    private static string OnOff(bool active) => active ? "An" : "Aus";
+        NPC friend = friends[friendIndex];
+        int hearts = Game1.player.getFriendshipHeartLevelForNPC(friend.Name);
+        Text(batch, T("friends.hearts", new { name = friend.displayName, hearts }), x, y + 6, Gold, width);
+        Pair(batch, x, y + row, width, row, "<", () => MoveFriend(-1), ">", () => MoveFriend(1));
+        Button(batch, new Rectangle(x, y + row * 2, width, row - 6), T("friends.gain"), () =>
+        {
+            var friendship = Game1.player.friendshipData[friend.Name];
+            int before = friendship.Points;
+            Game1.player.changeFriendship(250, friend);
+            status = T("friends.changed", new { name = friend.displayName, points = (friendship.Points - before).ToString("+#;-#;0") });
+        });
+    }
+
+    private void MoveFriend(int amount)
+    {
+        if (friends is { Length: > 0 })
+            friendIndex = (friendIndex + amount + friends.Length) % friends.Length;
+    }
+
+    private void GiveGold(int amount) => status = T("player.gold-given", new { amount = ModEntry.AddGold(amount).ToString("N0") });
+
+    private string OnOff(bool active) => active ? T("state.on") : T("state.off");
 
     private void ExpandBackpack()
     {
         Farmer player = Game1.player;
         if (player.MaxItems >= 36)
         {
-            status = "Der Rucksack ist bereits vollständig erweitert.";
+            status = T("player.backpack.full");
             return;
         }
 
         player.MaxItems = 36;
-        status = "Der Rucksack hat jetzt 36 Plätze.";
+        status = T("player.backpack.upgraded");
     }
 
     private void GainExperience(int skill)
@@ -251,18 +296,18 @@ internal sealed class TrainerMenu : IClickableMenu
         int added = Math.Min(1_000, 15_000 - Game1.player.experiencePoints[skill]);
         if (added <= 0)
         {
-            status = $"{Skills[skill]} hat die Grundspiel-EP-Grenze erreicht.";
+            status = T("progress.cap", new { skill = T(Skills[skill]) });
             return;
         }
 
         Game1.player.gainExperience(skill, added);
-        status = $"+{added:N0} EP für {Skills[skill]}.";
+        status = T("progress.added", new { amount = added.ToString("N0"), skill = T(Skills[skill]) });
     }
 
     private void WarpRailroad()
     {
         if (Game1.year == 1 && Game1.currentSeason == "spring")
-            status = "Der Bahnhof wird im Sommer freigeschaltet.";
+            status = T("world.railroad.locked");
         else
             Warp("Railroad", 30, 34);
     }
@@ -278,7 +323,7 @@ internal sealed class TrainerMenu : IClickableMenu
     {
         if (Game1.getLocationFromName(location) == null)
         {
-            status = "Das Ziel ist in diesem Spielstand nicht verfügbar.";
+            status = T("world.no-destination");
             return;
         }
 
@@ -313,7 +358,7 @@ internal sealed class TrainerMenu : IClickableMenu
         int requested = item.Stack;
         Item? remaining = Game1.player.addItemToInventory(item);
         int added = requested - (remaining?.Stack ?? 0);
-        status = added == 0 ? "Inventar voll." : $"+{added} × {data.DisplayName}" + (added < requested ? " · Inventar voll" : "");
+        status = added == 0 ? T("items.full") : T("items.added", new { count = added, name = data.DisplayName }) + (added < requested ? T("items.partial") : "");
     }
 
     private void TendCrops(bool grow)
@@ -331,7 +376,7 @@ internal sealed class TrainerMenu : IClickableMenu
             count++;
         }
 
-        status = grow ? $"{count} Kulturen bearbeitet." : $"{count} Felder gegossen.";
+        status = grow ? T("farm.grown", new { count }) : T("farm.watered", new { count });
     }
 
     private void Pair(SpriteBatch batch, int x, int y, int width, int row, string first, Action firstClick,

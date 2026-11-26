@@ -1,16 +1,19 @@
 # Stardew Valley Trainer
 
-Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspieler mit **F5** das Menü.
+[English instructions](README.en.md)
+
+Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspieler mit **F5** das Menü. Der Trainer folgt der Spielsprache und unterstützt Deutsch und Englisch.
 
 | Menü | Funktionen |
 | --- | --- |
 | Spieler | Gold, Gesundheit, Ausdauer und Rucksackplätze |
-| Welt | Spieluhr anhalten und zu Orten im Grundspiel reisen |
+| Welt | Spieluhr anhalten, Sonne oder Regen für morgen einstellen und zu Orten im Grundspiel reisen |
 | Items | Item-Katalog mit Suche nach Name oder ID, Menge und Qualität |
 | Farm | Bepflanzten Boden am aktuellen Ort gießen und lebende Kulturen erntereif machen |
 | Fortschritt | Erfahrung für die fünf Fähigkeiten des Grundspiels hinzufügen |
+| Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
 
-**F6** gibt 10.000 Gold, **F7** heilt, **F8** füllt die Ausdauer und **F9** schaltet die Zeitsperre um. Die Zeitsperre endet am nächsten Morgen. Änderungen an Gold, Inventar, Farm und Fähigkeiten werden mit dem Spielstand gespeichert, wenn das Spiel regulär speichert.
+Die Zeitsperre endet am nächsten Morgen. Besondere Spieltage können das eingestellte Wetter überschreiben. Dauerhafte Änderungen werden beim regulären Speichern übernommen.
 
 ## Bauen und installieren
 
