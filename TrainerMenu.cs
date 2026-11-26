@@ -14,7 +14,11 @@ namespace StardewValleyTrainer;
 
 internal sealed partial class TrainerMenu : IClickableMenu
 {
-    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends", "tab.gifts", "tab.recipes", "tab.mods", "tab.fancy" };
+    private static readonly string[] Tabs =
+    {
+        "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends",
+        "tab.gifts", "tab.recipes", "tab.community", "tab.mods", "tab.equipment", "tab.fancy"
+    };
     private static readonly string[] Skills = { "skill.farming", "skill.fishing", "skill.mining", "skill.foraging", "skill.combat" };
     private static readonly string[] BaseDebuffs =
     {
@@ -43,6 +47,8 @@ internal sealed partial class TrainerMenu : IClickableMenu
     private readonly TextBox playerSpeed;
     private readonly TextBox fancyStrength;
     private readonly TextBox fancyDuration;
+    private readonly TextBox toolLevel;
+    private readonly TextBox mineFloor;
     private ParsedItemData[]? catalog;
     private ParsedItemData[] results = Array.Empty<ParsedItemData>();
     private string? lastQuery;
@@ -69,6 +75,8 @@ internal sealed partial class TrainerMenu : IClickableMenu
         playerSpeed = CreateInput(mod.PlayerSpeedBonus > 0 ? mod.PlayerSpeedBonus.ToString(CultureInfo.InvariantCulture) : "3");
         fancyStrength = CreateInput("5");
         fancyDuration = CreateInput("60");
+        toolLevel = CreateInput("4");
+        mineFloor = CreateInput("1");
     }
 
     private static TextBox CreateInput(string text) =>
@@ -120,6 +128,8 @@ internal sealed partial class TrainerMenu : IClickableMenu
             MoveItems(direction > 0 ? -1 : 1);
         if (tab == 6)
             MoveGifts(direction > 0 ? -1 : 1);
+        if (tab == 8)
+            MoveProgressEntries(direction > 0 ? -1 : 1);
     }
 
     private string T(string key, object? tokens = null) => mod.Translate(key, tokens);
@@ -192,7 +202,7 @@ internal sealed partial class TrainerMenu : IClickableMenu
         {
             int current = i;
             Button(batch, new Rectangle(x + 11, y + 87 + navRow * i, railWidth - 22, navRow - 4),
-                T(Tabs[i]), () => { tab = current; status = ""; }, tab == i);
+                T(Tabs[i]), () => { tab = current; status = ""; confirmCommunity = false; confirmQuest = null; }, tab == i);
         }
 
         int top = y + 82;
@@ -206,8 +216,10 @@ internal sealed partial class TrainerMenu : IClickableMenu
             case 5: DrawFriends(batch, left, top, contentWidth, row); break;
             case 6: DrawGifts(batch, left, top, contentWidth, row); break;
             case 7: DrawRecipes(batch, left, top, contentWidth, row); break;
-            case 8: DrawMods(batch, left, top, contentWidth, row); break;
-            case 9: DrawFancy(batch, left, top, contentWidth, row); break;
+            case 8: DrawCommunity(batch, left, top, contentWidth, row); break;
+            case 9: DrawMods(batch, left, top, contentWidth, row); break;
+            case 10: DrawEquipment(batch, left, top, contentWidth, row); break;
+            case 11: DrawFancy(batch, left, top, contentWidth, row); break;
         }
 
         int footer = y + height - 47;
@@ -499,6 +511,12 @@ internal sealed partial class TrainerMenu : IClickableMenu
 
     private void Spawn(ParsedItemData data, int count, int quality)
     {
+        int added = AddItemsToInventory(data, count, quality);
+        status = added == 0 ? T("items.full") : T("items.added", new { count = added, name = data.DisplayName }) + (added < count ? T("items.partial") : "");
+    }
+
+    private static int AddItemsToInventory(ParsedItemData data, int count, int quality)
+    {
         int added = 0;
         while (added < count)
         {
@@ -511,7 +529,7 @@ internal sealed partial class TrainerMenu : IClickableMenu
                 break;
         }
 
-        status = added == 0 ? T("items.full") : T("items.added", new { count = added, name = data.DisplayName }) + (added < count ? T("items.partial") : "");
+        return added;
     }
 
     private void TendCrops(bool grow)

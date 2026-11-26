@@ -14,12 +14,18 @@ Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspi
 | Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
 | Geschenke | Aufenthaltsort, Geburtstag, Herzen, Geschenkzähler und Geschenkvorlieben je Bewohner. Empfohlene Items einzeln ins Inventar legen |
 | Rezepte | Gelernte Rezepte zählen und Koch- oder Handwerksrezepte freischalten |
+| Gemeinschaft | Bündel-Items in passender Qualität holen, Bündel oder Zentrum abschließen, Museumsspenden finden und Aufträge abschließen |
 | Mods | Geladene Zusatzmods ansehen, eigene Schnellreisepunkte speichern und den Expanded-Item-Filter öffnen |
+| Ausrüstung | Werkzeugstufe ändern, eine Minenebene wählen oder eine Leiter nach unten platzieren |
 | Spielereien | Zufallsemotes, Lichtshow, Emote-Party und vorübergehende Glücks- und Magneteffekte |
 
 Unter **Geschenke** wechselst du oben zwischen Bewohnern und unten zwischen Gegenständen. **Liebt** zeigt die besten Geschenke. Die Bewertungen stammen aus dem Spiel. Ein Klick auf **+1 ins Inventar** gibt dir den Gegenstand, damit du ihn selbst verschenken kannst.
 
 Die Beträge für Gold, Items, EP und Freundschaftspunkte kannst du selbst eingeben.
+
+Unter **Gemeinschaft → Gemeinschaftszentrum** kannst du die Bündel deines Spielstands durchsehen und fehlende Items in der benötigten Menge und Qualität holen. Du kannst die Items selbst abgeben, ein Bündel direkt abschließen oder nach Bestätigung alle übrigen Bündel erledigen. Bündelbelohnungen bleiben abholbar, und Räume werden nach ihren Bündeln freigeschaltet. Die Anzeige unterstützt gemischte Bündel. Die Aktionen stehen auf der Joja-Route nicht zur Verfügung.
+
+**Gemeinschaft → Museum** zeigt fehlende Fundstücke für Gunther. Unter **Aufträge** kannst du sichtbare Tagebuchaufträge nach Bestätigung abschließen. Unter **Ausrüstung** lässt sich das ausgewählte Werkzeug in der Schnellleiste anpassen oder eine Minenebene als Ziel wählen. Für die Schädelhöhle brauchst du den Schädelschlüssel.
 
 Unter **Welt → Schnellreise** bringt dich ein Klick auf **Teleportieren: …** direkt zum gewählten Ort. Über **Zum letzten Absprungpunkt zurück** kommst du zurück, solange die Stelle frei ist. Unter **Welt → Zeit & Wetter** kannst du die Uhr in Zehnerschritten vorlaufen lassen und die Vorhersage fürs Tal ändern. Das Vorspulen stoppt vor dem erzwungenen Tagesende.
 

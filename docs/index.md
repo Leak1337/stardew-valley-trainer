@@ -17,7 +17,9 @@ Press **F5** in a loaded single-player save to open the trainer. The menu follow
 | Friendship | Add friendship points for villagers you've already met |
 | Gifts | See each villager's best gifts, birthday, location, hearts, and gift counts |
 | Recipes | Unlock cooking and crafting recipes |
+| Community | Get bundle requirements, complete bundles or the Community Center, find museum donations, and finish quests |
 | Mods | See loaded add-ons, mark waypoints, and filter Expanded items when the mod is detected |
+| Equipment | Change tool tiers, choose a mine floor, and place a ladder down |
 | Fancy | Emotes, light show, and adjustable temporary luck and magnetism boosts |
 
 SMAPI is the only required add-on. The trainer also reads compatible mod content from the game. Enter your own amounts for gold, items, XP, and friendship points.

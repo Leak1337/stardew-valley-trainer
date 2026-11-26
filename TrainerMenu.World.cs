@@ -38,7 +38,7 @@ internal sealed partial class TrainerMenu
             () => WarpViaMap("Forest", "Farm", "Town", "BusStop"),
             TeleportLabel("world.travel.mountain"), () => WarpViaMap("Mountain", "Town", "Backwoods", "Railroad"));
         Pair(batch, x, y + row * 6, width, row, T("world.teleport-back"), ReturnFromTeleport,
-            T("world.open-waypoints"), () => { tab = 8; showModList = false; status = ""; });
+            T("world.open-waypoints"), () => { tab = 9; showModList = false; status = ""; });
     }
 
     private void DrawTimeAndWeather(SpriteBatch batch, int x, int y, int width, int row)

@@ -17,7 +17,9 @@ description: Ingame-Trainer für Stardew Valley 1.6.15
 | Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
 | Geschenke | Beste Geschenke, Geburtstag, Aufenthaltsort, Herzen und Geschenkzähler je Bewohner ansehen |
 | Rezepte | Koch- und Handwerksrezepte freischalten |
+| Gemeinschaft | Bündel-Items holen, Bündel oder Gemeinschaftszentrum abschließen, Museumsstücke und Aufträge verwalten |
 | Mods | Zusatzmods ansehen, Schnellreisepunkte markieren und bei erkanntem Expanded dessen Items filtern |
+| Ausrüstung | Werkzeugstufen ändern, Minenebene wählen und Leitern platzieren |
 | Spielereien | Emotes, Lichtshow und temporäre Glücks- und Magneteffekte |
 
 Der Trainer benötigt nur SMAPI und liest Inhalte kompatibler Zusatzmods aus dem Spiel. Beträge für Gold, Items, EP und Freundschaftspunkte kannst du selbst eingeben.

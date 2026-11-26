@@ -14,12 +14,18 @@ An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a singl
 | Friendship | Add friendship points for villagers you've already met |
 | Gifts | See each villager's location, birthday, hearts, gift counts, and gift preferences. Add individual items to your inventory |
 | Recipes | Count learned recipes and unlock cooking or crafting recipes |
+| Community | Browse actual Community Center bundles, spawn required items at their required quality, complete a bundle or the center, find missing museum donations, and finish journal quests |
 | Mods | See which add-ons are loaded, save waypoints, and open Expanded's item filter when installed |
+| Equipment | Change your selected tool tier, teleport to a chosen mine floor, or place a ladder down |
 | Fancy | Random emotes, a light show, nearby villager emotes, and temporary luck and magnetism boosts |
 
 Under **Gifts**, use the top arrows to switch villagers and the bottom arrows to browse items. **Loves** shows their best gifts. Ratings come from the game. Select **+1 to inventory** to get an item you can give to the villager.
 
 Enter your own amounts for gold, items, XP, and friendship points.
+
+Open **Community → Community Center** to browse bundles and get the missing items. Item spawns leave the donation for you. **Complete this bundle** fills the selected bundle immediately, keeps its unclaimed reward available, and unlocks the room when all of its bundles are finished. **Complete the center** asks for confirmation before filling all remaining Community Center bundles. The tracker uses the loaded save's bundle definitions, including remixed bundles. The Joja route does not use these actions.
+
+**Community → Museum** lists missing donations so you can get an item and give it to Gunther. **Community → Quests** can complete a visible journal quest after confirmation, with any available reward left in the quest journal. Under **Equipment**, select a supported tool on your toolbar before changing its tier. The mine controls accept an exact floor and require the Skull Key for Skull Cavern.
 
 Open **World → Fast travel** and choose a **Teleport to …** button to move there immediately. **Return to your last departure point** takes you back if that tile is still accessible. Use **World → Time & weather** to set tomorrow's valley forecast or advance the clock in multiples of 10 minutes. Clock advance stops before the forced end of the day.
 
