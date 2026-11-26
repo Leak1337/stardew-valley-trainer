@@ -9,15 +9,16 @@ description: Ingame-Trainer für Stardew Valley 1.6.15
 
 | Bereich | Funktionen |
 | --- | --- |
-| Spieler | Gold, Gesundheit, Ausdauer und Rucksackplätze |
-| Welt | Spieluhr anhalten, Wetter für morgen einstellen und schnellreisen |
+| Spieler | Gold, Gesundheit, Ausdauer, Rucksackplätze und Lauftempo der eigenen Spielfigur |
+| Welt | Teleportieren, zum letzten Absprungpunkt zurückkehren, Zeit steuern und Wetter für morgen einstellen |
 | Items | Gegenstände nach Name oder ID suchen und ins Inventar legen |
-| Farm | Felder gießen, Kulturen erntereif machen, Gießkannen auffüllen und Tiere versorgen |
+| Farm | Felder gießen, Tiere versorgen, Zäune reparieren und Maschinen fertigstellen |
 | Fortschritt | Erfahrung für Landwirtschaft, Angeln, Bergbau, Sammeln und Kampf |
 | Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
 | Geschenke | Beste Geschenke, Geburtstag, Aufenthaltsort, Herzen und Geschenkzähler je Bewohner ansehen |
 | Rezepte | Koch- und Handwerksrezepte freischalten |
 | Mods | Zusatzmods ansehen, Schnellreisepunkte markieren und bei erkanntem Expanded dessen Items filtern |
+| Spielereien | Emotes, Lichtshow und temporäre Glücks- und Magneteffekte |
 
 Der Trainer benötigt nur SMAPI und liest Inhalte kompatibler Zusatzmods aus dem Spiel. Beträge für Gold, Items, EP und Freundschaftspunkte kannst du selbst eingeben.
 

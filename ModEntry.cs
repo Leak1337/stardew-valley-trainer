@@ -3,6 +3,7 @@ using System.Linq;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Buffs;
 
 namespace StardewValleyTrainer;
 
@@ -16,17 +17,28 @@ public sealed class ModEntry : Mod
     internal bool FreezeTime { get; set; }
     internal bool KeepHealthy { get; set; }
     internal bool KeepEnergized { get; set; }
+    internal int PlayerSpeedBonus { get; private set; }
+    internal Waypoint? PreviousTeleport { get; set; }
+    private const string SpeedBuffId = "Leak1337.StardewValleyTrainer.Speed";
 
     public override void Entry(IModHelper helper)
     {
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
         helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
-        helper.Events.GameLoop.DayStarted += (_, _) => FreezeTime = false;
+        helper.Events.GameLoop.DayStarted += (_, _) =>
+        {
+            FreezeTime = false;
+            PreviousTeleport = null;
+            if (PlayerSpeedBonus > 0 && !Context.IsMultiplayer)
+                SetPlayerSpeed(PlayerSpeedBonus);
+        };
         helper.Events.GameLoop.ReturnedToTitle += (_, _) =>
         {
             FreezeTime = KeepHealthy = KeepEnergized = false;
             waypoints = null;
+            PreviousTeleport = null;
+            PlayerSpeedBonus = 0;
         };
     }
 
@@ -45,6 +57,19 @@ public sealed class ModEntry : Mod
     internal string Translate(string key, object? tokens = null) => Helper.Translation.Get(key, tokens).ToString();
 
     internal string? ExpandedVersion => Helper.ModRegistry.Get(ExpandedId)?.Manifest.Version.ToString();
+
+    internal void SetPlayerSpeed(int amount)
+    {
+        Game1.player.buffs.Remove(SpeedBuffId);
+        PlayerSpeedBonus = amount;
+        if (amount > 0)
+        {
+            Game1.player.applyBuff(new Buff(SpeedBuffId, duration: Buff.ENDLESS, effects: new BuffEffects
+            {
+                Speed = { Value = amount }
+            }, displayName: Translate("player.speed-buff")));
+        }
+    }
 
     internal (string Name, string Version)[] GetDetectedMods() => Helper.ModRegistry.GetAll()
         .Where(info => info.Manifest.UniqueID != ModManifest.UniqueID

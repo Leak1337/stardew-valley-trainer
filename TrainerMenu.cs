@@ -14,8 +14,13 @@ namespace StardewValleyTrainer;
 
 internal sealed partial class TrainerMenu : IClickableMenu
 {
-    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends", "tab.gifts", "tab.recipes", "tab.mods" };
+    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends", "tab.gifts", "tab.recipes", "tab.mods", "tab.fancy" };
     private static readonly string[] Skills = { "skill.farming", "skill.fishing", "skill.mining", "skill.foraging", "skill.combat" };
+    private static readonly string[] BaseDebuffs =
+    {
+        Buff.goblinsCurse, Buff.slimed, Buff.evilEye, Buff.tipsy, Buff.fear, Buff.frozen,
+        Buff.spawnMonsters, Buff.nauseous, Buff.darkness, Buff.weakness
+    };
     private static readonly Color Background = new(24, 38, 34);
     private static readonly Color Sidebar = new(16, 28, 25);
     private static readonly Color Surface = new(32, 52, 45);
@@ -34,6 +39,10 @@ internal sealed partial class TrainerMenu : IClickableMenu
     private readonly TextBox itemAmount;
     private readonly TextBox experienceAmount;
     private readonly TextBox friendshipAmount;
+    private readonly TextBox clockMinutes;
+    private readonly TextBox playerSpeed;
+    private readonly TextBox fancyStrength;
+    private readonly TextBox fancyDuration;
     private ParsedItemData[]? catalog;
     private ParsedItemData[] results = Array.Empty<ParsedItemData>();
     private string? lastQuery;
@@ -56,6 +65,10 @@ internal sealed partial class TrainerMenu : IClickableMenu
         itemAmount = CreateInput("1");
         experienceAmount = CreateInput("1000");
         friendshipAmount = CreateInput("250");
+        clockMinutes = CreateInput("60");
+        playerSpeed = CreateInput(mod.PlayerSpeedBonus > 0 ? mod.PlayerSpeedBonus.ToString(CultureInfo.InvariantCulture) : "3");
+        fancyStrength = CreateInput("5");
+        fancyDuration = CreateInput("60");
     }
 
     private static TextBox CreateInput(string text) =>
@@ -194,6 +207,7 @@ internal sealed partial class TrainerMenu : IClickableMenu
             case 6: DrawGifts(batch, left, top, contentWidth, row); break;
             case 7: DrawRecipes(batch, left, top, contentWidth, row); break;
             case 8: DrawMods(batch, left, top, contentWidth, row); break;
+            case 9: DrawFancy(batch, left, top, contentWidth, row); break;
         }
 
         int footer = y + height - 47;
@@ -213,31 +227,37 @@ internal sealed partial class TrainerMenu : IClickableMenu
             T("player.energy"), () => { player.Stamina = player.MaxStamina; status = T("player.energized"); });
         Pair(batch, x, y + row * 3, width, row, T("player.keep-health", new { state = OnOff(mod.KeepHealthy) }), () => mod.KeepHealthy = !mod.KeepHealthy,
             T("player.keep-energy", new { state = OnOff(mod.KeepEnergized) }), () => mod.KeepEnergized = !mod.KeepEnergized, mod.KeepHealthy, mod.KeepEnergized);
-        Button(batch, new Rectangle(x, y + row * 4, width, row - 6), T("player.backpack", new { slots = player.MaxItems }), ExpandBackpack);
+        Pair(batch, x, y + row * 4, width, row, T("player.backpack", new { slots = player.MaxItems }), ExpandBackpack,
+            T("player.cleanse"), RemoveDebuffs);
+        Text(batch, T("player.speed", new { amount = mod.PlayerSpeedBonus }), x, y + row * 5 + 6, Mint, width);
+        int fieldWidth = width / 4;
+        DrawInput(batch, playerSpeed, x, y + row * 6, fieldWidth - 5);
+        Pair(batch, x + fieldWidth, y + row * 6, width - fieldWidth, row, T("player.speed-apply"), SetPlayerSpeed,
+            T("player.speed-off"), () => { mod.SetPlayerSpeed(0); status = T("player.speed-reset"); }, mod.PlayerSpeedBonus > 0);
     }
 
-    private void DrawWorld(SpriteBatch batch, int x, int y, int width, int row)
+    private void SetPlayerSpeed()
     {
-        int time = Game1.timeOfDay;
-        Text(batch, T("world.clock", new { day = Game1.dayOfMonth, year = Game1.year, time = $"{time / 100:00}:{time % 100:00}" }), x, y + 6, Gold, width);
-        Button(batch, new Rectangle(x, y + row, width, row - 6), T("world.freeze", new { state = OnOff(mod.FreezeTime) }),
-            () => mod.FreezeTime = !mod.FreezeTime, mod.FreezeTime);
-        Pair(batch, x, y + row * 2, width, row, T("world.sun"), () => SetWeather("Sun", T("world.sun")),
-            T("world.rain"), () => SetWeather("Rain", T("world.rain")));
-        Pair(batch, x, y + row * 3, width, row, T("world.travel.farm"), WarpFarm,
-            T("world.travel.town"), () => Warp("Town", 35, 57));
-        Pair(batch, x, y + row * 4, width, row, T("world.travel.beach"), () => Warp("Beach", 20, 4),
-            T("world.travel.mine"), () => Warp("Mine", 18, 13));
-        Pair(batch, x, y + row * 5, width, row, T("world.travel.railroad"), () => WarpRailroad(),
-            T("world.travel.bus"), () => Warp("BusStop", 14, 23));
-        Text(batch, T("world.railroad.note"), x, y + row * 6 + 4, Muted, width);
+        if (!TryReadAmount(playerSpeed, out int amount))
+            return;
+        if (amount > 20)
+        {
+            status = T("player.speed-limit");
+            return;
+        }
+
+        mod.SetPlayerSpeed(amount);
+        status = T("player.speed-set", new { amount });
     }
 
-    private void SetWeather(string weather, string message)
+    private void RemoveDebuffs()
     {
-        Game1.weatherForTomorrow = weather;
-        Game1.netWorldState.Value.GetWeatherForLocation("Default").WeatherForTomorrow = weather;
-        status = message;
+        var buffs = Game1.player.buffs;
+        string[] debuffs = BaseDebuffs.Where(buffs.IsApplied).ToArray();
+        foreach (string id in debuffs)
+            buffs.Remove(id);
+
+        status = T("player.cleansed", new { count = debuffs.Length });
     }
 
     private void DrawItems(SpriteBatch batch, int x, int y, int width, int row)
@@ -289,8 +309,9 @@ internal sealed partial class TrainerMenu : IClickableMenu
         Text(batch, T("farm.heading"), x, y + 6, Mint, width);
         Button(batch, new Rectangle(x, y + row, width, row - 6), T("farm.water"), () => TendCrops(false));
         Button(batch, new Rectangle(x, y + row * 2, width, row - 6), T("farm.grow"), () => TendCrops(true));
-        Text(batch, T("farm.note"), x, y + row * 3 + 8, Muted, width);
-        Button(batch, new Rectangle(x, y + row * 4, width, row - 6), T("farm.refill"), RefillWateringCans);
+        Button(batch, new Rectangle(x, y + row * 3, width, row - 6), T("farm.refill"), RefillWateringCans);
+        Pair(batch, x, y + row * 4, width, row, T("farm.repair"), RepairFences,
+            T("farm.machines"), FinishMachines);
         Pair(batch, x, y + row * 5, width, row, T("farm.feed"), () => TendAnimals(false),
             T("farm.pet"), () => TendAnimals(true));
         Text(batch, T("farm.animals-note"), x, y + row * 6 + 4, Muted, width);
@@ -415,6 +436,21 @@ internal sealed partial class TrainerMenu : IClickableMenu
             status = T("mods.blocked");
             return;
         }
+
+        if (Game1.currentLocation == destination && Game1.player.TilePoint == new Point(x, y))
+        {
+            status = T("mods.already-there");
+            return;
+        }
+
+        GameLocation previous = Game1.currentLocation;
+        if (Game1.locations.Contains(previous))
+        {
+            Point tile = Game1.player.TilePoint;
+            mod.PreviousTeleport = new Waypoint { Location = previous.NameOrUniqueName, X = tile.X, Y = tile.Y };
+        }
+        else
+            mod.PreviousTeleport = null;
 
         Close();
         Game1.warpFarmer(location, x, y, false);

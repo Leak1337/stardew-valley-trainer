@@ -6,19 +6,24 @@ An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a singl
 
 | Tab | Features |
 | --- | --- |
-| Player | Gold, health, energy, and backpack slots |
-| World | Freeze the clock, set tomorrow's weather to sunny or rainy, and travel to base-game locations |
+| Player | Gold, health, energy, backpack slots, a player-only movement speed bonus, and base-game debuff removal |
+| World | Teleport to named destinations, return to your last departure point, advance or freeze time, and set tomorrow's weather |
 | Items | Search by name or item ID, then select quantity and quality |
-| Farm | Water planted soil, mature crops, refill watering cans, and feed or pet animals at your current location |
+| Farm | Water soil, mature crops, refill watering cans, care for animals, repair fences, and finish running machines at your current location |
 | Skills | Add XP to the five base-game skills |
 | Friendship | Add friendship points for villagers you've already met |
 | Gifts | See each villager's location, birthday, hearts, gift counts, and gift preferences. Add individual items to your inventory |
 | Recipes | Count learned recipes and unlock cooking or crafting recipes |
 | Mods | See which add-ons are loaded, save waypoints, and open Expanded's item filter when installed |
+| Fancy | Random emotes, a light show, nearby villager emotes, and temporary luck and magnetism boosts |
 
 Under **Gifts**, use the top arrows to switch villagers and the bottom arrows to browse items. **Loves** shows their best gifts. Ratings come from the game. Select **+1 to inventory** to get an item you can give to the villager.
 
 Enter your own amounts for gold, items, XP, and friendship points.
+
+Open **World → Fast travel** and choose a **Teleport to …** button to move there immediately. **Return to your last departure point** takes you back if that tile is still accessible. Use **World → Time & weather** to set tomorrow's valley forecast or advance the clock in multiples of 10 minutes. Clock advance stops before the forced end of the day.
+
+Under **Player**, choose a movement speed bonus from 1 to 20 and apply it. The bonus affects only your character and lasts for the current play session until you reset it. Under **Fancy**, you can set the strength and duration of the temporary luck or magnetism boosts.
 
 ## Vanilla and modded saves
 

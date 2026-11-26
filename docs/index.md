@@ -9,15 +9,16 @@ Press **F5** in a loaded single-player save to open the trainer. The menu follow
 
 | Tab | Features |
 | --- | --- |
-| Player | Gold, health, energy, and backpack slots |
-| World | Freeze time, set tomorrow's weather, and fast travel |
+| Player | Gold, health, energy, backpack slots, and player-only movement speed |
+| World | Teleport, return to your last departure point, advance or freeze time, and set tomorrow's weather |
 | Items | Search for items by name or ID and add them to your inventory |
-| Farm | Water soil, mature crops, refill watering cans, and care for animals |
+| Farm | Water soil, care for animals, repair fences, and finish running machines |
 | Skills | Add XP to the five base-game skills |
 | Friendship | Add friendship points for villagers you've already met |
 | Gifts | See each villager's best gifts, birthday, location, hearts, and gift counts |
 | Recipes | Unlock cooking and crafting recipes |
 | Mods | See loaded add-ons, mark waypoints, and filter Expanded items when the mod is detected |
+| Fancy | Emotes, light show, and adjustable temporary luck and magnetism boosts |
 
 SMAPI is the only required add-on. The trainer also reads compatible mod content from the game. Enter your own amounts for gold, items, XP, and friendship points.
 

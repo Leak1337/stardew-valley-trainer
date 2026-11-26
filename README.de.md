@@ -6,19 +6,24 @@ Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspi
 
 | Menü | Funktionen |
 | --- | --- |
-| Spieler | Gold, Gesundheit, Ausdauer und Rucksackplätze |
-| Welt | Spieluhr anhalten, Sonne oder Regen für morgen einstellen und zu Orten im Grundspiel reisen |
+| Spieler | Gold, Gesundheit, Ausdauer, Rucksackplätze, Lauftempo der Spielfigur und Grundspiel-Debuffs entfernen |
+| Welt | Zu Orten teleportieren, zum letzten Absprungpunkt zurückkehren, Zeit anhalten oder vorspulen und Wetter für morgen einstellen |
 | Items | Item-Katalog mit Suche nach Name oder ID, Menge und Qualität |
-| Farm | Felder gießen, Kulturen erntereif machen, Gießkannen auffüllen und Tiere am aktuellen Ort füttern oder streicheln |
+| Farm | Felder gießen, Kulturen erntereif machen, Gießkannen auffüllen, Tiere versorgen, Zäune reparieren und Maschinen fertigstellen |
 | Fortschritt | Erfahrung für die fünf Fähigkeiten des Grundspiels hinzufügen |
 | Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
 | Geschenke | Aufenthaltsort, Geburtstag, Herzen, Geschenkzähler und Geschenkvorlieben je Bewohner. Empfohlene Items einzeln ins Inventar legen |
 | Rezepte | Gelernte Rezepte zählen und Koch- oder Handwerksrezepte freischalten |
 | Mods | Geladene Zusatzmods ansehen, eigene Schnellreisepunkte speichern und den Expanded-Item-Filter öffnen |
+| Spielereien | Zufallsemotes, Lichtshow, Emote-Party und vorübergehende Glücks- und Magneteffekte |
 
 Unter **Geschenke** wechselst du oben zwischen Bewohnern und unten zwischen Gegenständen. **Liebt** zeigt die besten Geschenke. Die Bewertungen stammen aus dem Spiel. Ein Klick auf **+1 ins Inventar** gibt dir den Gegenstand, damit du ihn selbst verschenken kannst.
 
 Die Beträge für Gold, Items, EP und Freundschaftspunkte kannst du selbst eingeben.
+
+Unter **Welt → Schnellreise** bringt dich ein Klick auf **Teleportieren: …** direkt zum gewählten Ort. Über **Zum letzten Absprungpunkt zurück** kommst du zurück, solange die Stelle frei ist. Unter **Welt → Zeit & Wetter** kannst du die Uhr in Zehnerschritten vorlaufen lassen und die Vorhersage fürs Tal ändern. Das Vorspulen stoppt vor dem erzwungenen Tagesende.
+
+Unter **Spieler** kannst du einen Lauftempo-Bonus von 1 bis 20 anwenden. Er wirkt nur auf deine Spielfigur und bleibt bis zum Zurücksetzen oder Verlassen des Spielstands aktiv. Unter **Spielereien** kannst du Stärke und Dauer für Glück und Magnetismus einstellen.
 
 ## Grundspiel und Mods
 

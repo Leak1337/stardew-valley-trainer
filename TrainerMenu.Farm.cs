@@ -53,4 +53,33 @@ internal sealed partial class TrainerMenu
 
         status = T(pet ? "farm.petted" : "farm.fed", new { count });
     }
+
+    private void RepairFences()
+    {
+        int count = 0;
+        foreach (Fence fence in Game1.currentLocation.Objects.Values.OfType<Fence>())
+        {
+            if (fence.health.Value >= fence.maxHealth.Value)
+                continue;
+
+            fence.health.Value = fence.maxHealth.Value;
+            count++;
+        }
+        status = T("farm.repaired", new { count });
+    }
+
+    private void FinishMachines()
+    {
+        int count = 0;
+        foreach (var machine in Game1.currentLocation.Objects.Values.ToArray())
+        {
+            if (!machine.bigCraftable.Value || machine.heldObject.Value is null || machine.MinutesUntilReady <= 0 || machine.readyForHarvest.Value)
+                continue;
+
+            machine.minutesElapsed(machine.MinutesUntilReady);
+            if (machine.readyForHarvest.Value)
+                count++;
+        }
+        status = T("farm.machines-finished", new { count });
+    }
 }
