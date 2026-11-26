@@ -11,9 +11,9 @@ using StardewValley.TerrainFeatures;
 
 namespace StardewValleyTrainer;
 
-internal sealed class TrainerMenu : IClickableMenu
+internal sealed partial class TrainerMenu : IClickableMenu
 {
-    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends" };
+    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends", "tab.gifts", "tab.recipes" };
     private static readonly string[] Skills = { "skill.farming", "skill.fishing", "skill.mining", "skill.foraging", "skill.combat" };
     private static readonly Color Background = new(17, 29, 26);
     private static readonly Color Surface = new(25, 43, 37);
@@ -84,6 +84,8 @@ internal sealed class TrainerMenu : IClickableMenu
     {
         if (tab == 2)
             MoveItems(direction > 0 ? -1 : 1);
+        if (tab == 6)
+            MoveGifts(direction > 0 ? -1 : 1);
     }
 
     private string T(string key, object? tokens = null) => mod.Translate(key, tokens);
@@ -132,6 +134,8 @@ internal sealed class TrainerMenu : IClickableMenu
             case 3: DrawFarm(batch, left, top, contentWidth, row); break;
             case 4: DrawProgress(batch, left, top, contentWidth, row); break;
             case 5: DrawFriends(batch, left, top, contentWidth, row); break;
+            case 6: DrawGifts(batch, left, top, contentWidth, row); break;
+            case 7: DrawRecipes(batch, left, top, contentWidth, row); break;
         }
 
         int footer = y + height - 43;
@@ -204,11 +208,7 @@ internal sealed class TrainerMenu : IClickableMenu
             ParsedItemData item = results[itemOffset + i];
             Rectangle bounds = new(x, listY + row * i, width, row - 5);
             DrawButton(batch, bounds, () => Spawn(item));
-            int icon = Math.Min(34, bounds.Height - 6);
-            batch.Draw(item.GetTexture(), new Rectangle(x + 9, bounds.Y + (bounds.Height - icon) / 2, icon, icon),
-                item.GetSourceRect(), Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.89f);
-            int textX = x + icon + 18;
-            Text(batch, item.DisplayName, textX, bounds.Y + 4, Ink, width * 3 / 5 - icon);
+            DrawItemName(batch, bounds, item, width * 3 / 5);
             Text(batch, item.QualifiedItemId, x + width * 2 / 3, bounds.Y + 4, Muted, width / 3 - 10);
         }
 
@@ -225,6 +225,10 @@ internal sealed class TrainerMenu : IClickableMenu
         Button(batch, new Rectangle(x, y + row, width, row - 6), T("farm.water"), () => TendCrops(false));
         Button(batch, new Rectangle(x, y + row * 2, width, row - 6), T("farm.grow"), () => TendCrops(true));
         Text(batch, T("farm.note"), x, y + row * 3 + 8, Muted, width);
+        Button(batch, new Rectangle(x, y + row * 4, width, row - 6), T("farm.refill"), RefillWateringCans);
+        Pair(batch, x, y + row * 5, width, row, T("farm.feed"), () => TendAnimals(false),
+            T("farm.pet"), () => TendAnimals(true));
+        Text(batch, T("farm.animals-note"), x, y + row * 6 + 4, Muted, width);
     }
 
     private void DrawProgress(SpriteBatch batch, int x, int y, int width, int row)
@@ -337,24 +341,39 @@ internal sealed class TrainerMenu : IClickableMenu
         if (query == lastQuery)
             return;
 
+        results = GetCatalog().Where(data => MatchesItem(data, query)).ToArray();
+        lastQuery = query;
+        itemOffset = 0;
+    }
+
+    private ParsedItemData[] GetCatalog() =>
         catalog ??= ItemRegistry.ItemTypes
             .SelectMany(type => type.GetAllIds().Select(id => type.GetData(id)))
             .Where(data => data != null && !data.IsErrorItem)
             .OrderBy(data => data.DisplayName, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();
-        results = catalog.Where(data => data.DisplayName.Contains(query, StringComparison.CurrentCultureIgnoreCase)
-            || (data.InternalName?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false)
-            || data.QualifiedItemId.Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray();
-        lastQuery = query;
-        itemOffset = 0;
+
+    private static bool MatchesItem(ParsedItemData data, string query) =>
+        data.DisplayName.Contains(query, StringComparison.CurrentCultureIgnoreCase)
+        || (data.InternalName?.Contains(query, StringComparison.OrdinalIgnoreCase) ?? false)
+        || data.QualifiedItemId.Contains(query, StringComparison.OrdinalIgnoreCase);
+
+    private static void DrawItemName(SpriteBatch batch, Rectangle bounds, ParsedItemData item, int width)
+    {
+        int icon = Math.Min(34, bounds.Height - 6);
+        batch.Draw(item.GetTexture(), new Rectangle(bounds.X + 9, bounds.Y + (bounds.Height - icon) / 2, icon, icon),
+            item.GetSourceRect(), Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0.89f);
+        Text(batch, item.DisplayName, bounds.X + icon + 18, bounds.Y + 4, Ink, width - icon - 18);
     }
 
     private void MoveItems(int amount) => itemOffset = Math.Clamp(itemOffset + amount, 0, Math.Max(0, results.Length - ItemRows));
 
-    private void Spawn(ParsedItemData data)
+    private void Spawn(ParsedItemData data) => Spawn(data, quantity, Qualities[qualityIndex]);
+
+    private void Spawn(ParsedItemData data, int count, int quality)
     {
-        Item item = ItemRegistry.Create(data.QualifiedItemId, 1, Qualities[qualityIndex]);
-        item.Stack = Math.Min(quantity, item.maximumStackSize());
+        Item item = ItemRegistry.Create(data.QualifiedItemId, 1, quality);
+        item.Stack = Math.Min(count, item.maximumStackSize());
         int requested = item.Stack;
         Item? remaining = Game1.player.addItemToInventory(item);
         int added = requested - (remaining?.Stack ?? 0);

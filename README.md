@@ -9,9 +9,13 @@ Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspi
 | Spieler | Gold, Gesundheit, Ausdauer und Rucksackplätze |
 | Welt | Spieluhr anhalten, Sonne oder Regen für morgen einstellen und zu Orten im Grundspiel reisen |
 | Items | Item-Katalog mit Suche nach Name oder ID, Menge und Qualität |
-| Farm | Bepflanzten Boden am aktuellen Ort gießen und lebende Kulturen erntereif machen |
+| Farm | Felder gießen, Kulturen erntereif machen, Gießkannen auffüllen und Tiere am aktuellen Ort füttern oder streicheln |
 | Fortschritt | Erfahrung für die fünf Fähigkeiten des Grundspiels hinzufügen |
 | Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
+| Geschenke | Aufenthaltsort, Geburtstag, Herzen, Geschenkzähler und Geschenkvorlieben je Bewohner. Empfohlene Items einzeln ins Inventar legen |
+| Rezepte | Gelernte Rezepte zählen und Koch- oder Handwerksrezepte freischalten |
+
+Unter **Geschenke** wechselst du oben zwischen Bewohnern und unten zwischen Gegenständen. **Liebt** zeigt die besten Geschenke. Die Bewertungen stammen aus dem Spiel. Ein Klick auf **+1 ins Inventar** gibt dir den Gegenstand, damit du ihn selbst verschenken kannst.
 
 Die Zeitsperre endet am nächsten Morgen. Besondere Spieltage können das eingestellte Wetter überschreiben. Dauerhafte Änderungen werden beim regulären Speichern übernommen.
 

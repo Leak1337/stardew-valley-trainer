@@ -9,9 +9,13 @@ An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a singl
 | Player | Gold, health, energy, and backpack slots |
 | World | Freeze the clock, set tomorrow's weather to sunny or rainy, and travel to base-game locations |
 | Items | Search by name or item ID, then select quantity and quality |
-| Farm | Water planted soil and mature living crops at your current location |
+| Farm | Water planted soil, mature crops, refill watering cans, and feed or pet animals at your current location |
 | Skills | Add XP to the five base-game skills |
 | Friendship | Add friendship points for villagers you've already met |
+| Gifts | See each villager's location, birthday, hearts, gift counts, and gift preferences. Add individual items to your inventory |
+| Recipes | Count learned recipes and unlock cooking or crafting recipes |
+
+Under **Gifts**, use the top arrows to switch villagers and the bottom arrows to browse items. **Loves** shows their best gifts. Ratings come from the game. Select **+1 to inventory** to get an item you can give to the villager.
 
 The clock resumes the next morning. Special days can override the selected weather. Permanent changes take effect in your save when the game next saves normally.
 

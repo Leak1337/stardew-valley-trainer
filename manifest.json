@@ -1,8 +1,8 @@
 {
   "Name": "Stardew Valley Trainer",
   "Author": "Local",
-  "Version": "1.2.0",
-  "Description": "In-game single-player trainer with player, world, item, farm, and progression controls.",
+  "Version": "1.3.0",
+  "Description": "Single-player in-game trainer with a villager gift guide, farm tools, recipe unlocks, and more.",
   "UniqueID": "Leak1337.StardewValleyTrainer",
   "EntryDll": "StardewValleyTrainer.dll",
   "MinimumApiVersion": "4.1.10"

@@ -17,6 +17,8 @@ $references = @(
     'System.Runtime.dll'
     'System.Linq.dll'
     'System.Collections.dll'
+    'System.Xml.ReaderWriter.dll'
+    'System.Private.Xml.dll'
     'netstandard.dll'
     'Stardew Valley.dll'
     'StardewValley.GameData.dll'
