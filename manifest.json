@@ -1,8 +1,8 @@
 {
   "Name": "Stardew Valley Trainer",
   "Author": "Local",
-  "Version": "1.3.0",
-  "Description": "Single-player in-game trainer with a villager gift guide, farm tools, recipe unlocks, and more.",
+  "Version": "1.4.0",
+  "Description": "Single-player trainer for the base game and modded saves, with a gift guide, waypoints, and optional Expanded features.",
   "UniqueID": "Leak1337.StardewValleyTrainer",
   "EntryDll": "StardewValleyTrainer.dll",
   "MinimumApiVersion": "4.1.10"

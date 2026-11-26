@@ -17,5 +17,8 @@ Press **F5** in a loaded single-player save to open the trainer. The menu follow
 | Friendship | Add friendship points for villagers you've already met |
 | Gifts | See each villager's best gifts, birthday, location, hearts, and gift counts |
 | Recipes | Unlock cooking and crafting recipes |
+| Mods | See loaded add-ons, mark waypoints, and filter Expanded items when the mod is detected |
+
+SMAPI is the only required add-on. The trainer also reads compatible mod content from the game. Enter your own amounts for gold, items, XP, and friendship points.
 
 The trainer was built for Stardew Valley **1.6.15** and **SMAPI 4.1.10**. Find the [source and installation instructions on GitHub](https://github.com/Leak1337/stardew-valley-trainer#build-and-install).

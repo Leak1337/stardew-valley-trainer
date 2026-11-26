@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,28 +14,34 @@ namespace StardewValleyTrainer;
 
 internal sealed partial class TrainerMenu : IClickableMenu
 {
-    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends", "tab.gifts", "tab.recipes" };
+    private static readonly string[] Tabs = { "tab.player", "tab.world", "tab.items", "tab.farm", "tab.progress", "tab.friends", "tab.gifts", "tab.recipes", "tab.mods" };
     private static readonly string[] Skills = { "skill.farming", "skill.fishing", "skill.mining", "skill.foraging", "skill.combat" };
-    private static readonly Color Background = new(17, 29, 26);
-    private static readonly Color Surface = new(25, 43, 37);
-    private static readonly Color Hover = new(41, 65, 54);
-    private static readonly Color Border = new(55, 78, 65);
-    private static readonly Color Mint = new(161, 226, 181);
-    private static readonly Color Gold = new(246, 207, 126);
-    private static readonly Color Ink = new(243, 247, 236);
-    private static readonly Color Muted = new(177, 197, 185);
+    private static readonly Color Background = new(24, 38, 34);
+    private static readonly Color Sidebar = new(16, 28, 25);
+    private static readonly Color Surface = new(32, 52, 45);
+    private static readonly Color Hover = new(50, 77, 65);
+    private static readonly Color Border = new(60, 86, 74);
+    private static readonly Color Mint = new(177, 237, 193);
+    private static readonly Color Gold = new(248, 215, 148);
+    private static readonly Color Ink = new(245, 248, 238);
+    private static readonly Color Muted = new(187, 207, 196);
 
     private readonly ModEntry mod;
     private readonly List<(Rectangle Bounds, Action Click)> buttons = new();
+    private readonly List<TextBox> visibleInputs = new();
     private readonly TextBox search;
+    private readonly TextBox goldAmount;
+    private readonly TextBox itemAmount;
+    private readonly TextBox experienceAmount;
+    private readonly TextBox friendshipAmount;
     private ParsedItemData[]? catalog;
     private ParsedItemData[] results = Array.Empty<ParsedItemData>();
     private string? lastQuery;
     private string status = "";
     private int tab;
     private int itemOffset;
-    private int quantity = 1;
     private int qualityIndex;
+    private bool expandedItemsOnly;
     private int friendIndex;
     private NPC[]? friends;
     private const int ItemRows = 5;
@@ -44,18 +51,32 @@ internal sealed partial class TrainerMenu : IClickableMenu
     public TrainerMenu(ModEntry mod)
     {
         this.mod = mod;
-        search = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Color.Black);
+        search = CreateInput("");
+        goldAmount = CreateInput("10000");
+        itemAmount = CreateInput("1");
+        experienceAmount = CreateInput("1000");
+        friendshipAmount = CreateInput("250");
     }
+
+    private static TextBox CreateInput(string text) =>
+        new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Color.Black)
+        {
+            Text = text
+        };
 
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
-        if (tab == 2 && new Rectangle(search.X, search.Y, search.Width, search.Height).Contains(x, y))
+        foreach (TextBox input in visibleInputs)
         {
-            search.Selected = true;
-            return;
+            if (new Rectangle(input.X, input.Y, input.Width, input.Height).Contains(x, y))
+            {
+                ClearInputFocus();
+                input.Selected = true;
+                return;
+            }
         }
 
-        search.Selected = false;
+        ClearInputFocus();
         foreach (var button in buttons)
         {
             if (!button.Bounds.Contains(x, y))
@@ -76,7 +97,7 @@ internal sealed partial class TrainerMenu : IClickableMenu
             return;
         }
 
-        if (!search.Selected)
+        if (!visibleInputs.Any(input => input.Selected))
             base.receiveKeyPress(key);
     }
 
@@ -92,40 +113,76 @@ internal sealed partial class TrainerMenu : IClickableMenu
 
     private void Close()
     {
-        search.Selected = false;
+        ClearInputFocus();
         exitThisMenu();
+    }
+
+    private void ClearInputFocus()
+    {
+        foreach (TextBox input in visibleInputs)
+        {
+            if (input.Selected)
+                input.Selected = false;
+        }
+    }
+
+    private void DrawInput(SpriteBatch batch, TextBox input, int x, int y, int width)
+    {
+        input.X = x;
+        input.Y = y;
+        input.Width = width;
+        input.Draw(batch);
+        visibleInputs.Add(input);
+    }
+
+    private bool TryReadAmount(TextBox input, out int amount)
+    {
+        if (int.TryParse(input.Text, NumberStyles.None, CultureInfo.InvariantCulture, out amount) && amount > 0)
+            return true;
+
+        status = T("amount.invalid");
+        return false;
     }
 
     public override void draw(SpriteBatch batch)
     {
         buttons.Clear();
+        visibleInputs.Clear();
         int vw = Game1.uiViewport.Width;
         int vh = Game1.uiViewport.Height;
-        int width = Math.Min(940, vw - 24);
-        int height = Math.Min(638, vh - 24);
+        int width = Math.Min(1040, vw - 24);
+        int height = Math.Min(668, vh - 24);
         int x = (vw - width) / 2;
         int y = (vh - height) / 2;
-        int row = Math.Min(55, Math.Max(30, (height - 208) / 7));
-        int left = x + 22;
-        int contentWidth = width - 44;
+        int railWidth = Math.Clamp(width / 5, 108, 194);
+        int gutter = width >= 720 ? 28 : 14;
+        int row = Math.Min(59, Math.Max(28, (height - 164) / 7));
+        int left = x + railWidth + gutter;
+        int contentWidth = width - railWidth - 2 * gutter;
 
-        Fill(batch, new Rectangle(0, 0, vw, vh), Color.Black * 0.62f);
-        Fill(batch, new Rectangle(x + 6, y + 8, width, height), Color.Black * 0.5f);
-        Fill(batch, new Rectangle(x, y, width, height), Border);
-        Fill(batch, new Rectangle(x + 1, y + 1, width - 2, height - 2), Background);
-        Fill(batch, new Rectangle(x + 1, y + 1, width - 2, 4), Mint);
-        Text(batch, "Stardew Valley Trainer", left, y + 14, Ink, contentWidth - 68, true);
-        Button(batch, new Rectangle(x + width - 58, y + 13, 38, 36), "X", Close);
+        Fill(batch, new Rectangle(0, 0, vw, vh), Color.Black * 0.68f, 0.78f);
+        Fill(batch, new Rectangle(x + 7, y + 9, width, height), Color.Black * 0.55f, 0.79f);
+        Fill(batch, new Rectangle(x, y, width, height), Border, 0.8f);
+        Fill(batch, new Rectangle(x + 1, y + 1, width - 2, height - 2), Background, 0.81f);
+        Fill(batch, new Rectangle(x + 1, y + 1, railWidth - 1, height - 2), Sidebar, 0.82f);
+        Fill(batch, new Rectangle(x + railWidth, y + 1, 1, height - 2), Border, 0.83f);
+        Fill(batch, new Rectangle(x + 1, y + 1, railWidth - 1, 3), Mint, 0.84f);
 
-        int tabWidth = contentWidth / Tabs.Length;
+        Text(batch, "Stardew Valley", x + 13, y + 17, Muted, railWidth - 26);
+        Text(batch, "Trainer", x + 13, y + 37, Mint, railWidth - 26, true);
+        Text(batch, T(Tabs[tab]), left, y + 19, Ink, Math.Max(1, contentWidth - 55), true);
+        Fill(batch, new Rectangle(left, y + 65, contentWidth, 1), Border, 0.84f);
+        Button(batch, new Rectangle(x + width - gutter - 38, y + 17, 38, 36), "X", Close);
+
+        int navRow = Math.Min(47, Math.Max(25, (height - 103) / Tabs.Length));
         for (int i = 0; i < Tabs.Length; i++)
         {
             int current = i;
-            Button(batch, new Rectangle(left + i * tabWidth, y + 64, tabWidth - 5, 38),
+            Button(batch, new Rectangle(x + 11, y + 87 + navRow * i, railWidth - 22, navRow - 4),
                 T(Tabs[i]), () => { tab = current; status = ""; }, tab == i);
         }
 
-        int top = y + 115;
+        int top = y + 82;
         switch (tab)
         {
             case 0: DrawPlayer(batch, left, top, contentWidth, row); break;
@@ -136,11 +193,12 @@ internal sealed partial class TrainerMenu : IClickableMenu
             case 5: DrawFriends(batch, left, top, contentWidth, row); break;
             case 6: DrawGifts(batch, left, top, contentWidth, row); break;
             case 7: DrawRecipes(batch, left, top, contentWidth, row); break;
+            case 8: DrawMods(batch, left, top, contentWidth, row); break;
         }
 
-        int footer = y + height - 43;
-        Fill(batch, new Rectangle(left, footer, contentWidth, 1), Border);
-        Text(batch, status.Length == 0 ? T("menu.close") : status, left, footer + 9, status.Length == 0 ? Muted : Gold, contentWidth);
+        int footer = y + height - 47;
+        Fill(batch, new Rectangle(left, footer, contentWidth, 1), Border, 0.84f);
+        Text(batch, status.Length == 0 ? T("menu.close") : status, left, footer + 12, status.Length == 0 ? Muted : Gold, contentWidth);
         drawMouse(batch);
     }
 
@@ -148,7 +206,9 @@ internal sealed partial class TrainerMenu : IClickableMenu
     {
         Farmer player = Game1.player;
         Text(batch, T("player.stats", new { gold = player.Money.ToString("N0"), health = player.health, maxHealth = player.maxHealth, energy = Math.Ceiling(player.Stamina), maxEnergy = player.MaxStamina }), x, y + 6, Gold, width);
-        Pair(batch, x, y + row, width, row, T("player.gold-small"), () => GiveGold(10_000), T("player.gold-large"), () => GiveGold(100_000));
+        DrawInput(batch, goldAmount, x, y + row, width / 2 - 5);
+        Button(batch, new Rectangle(x + width / 2 + 5, y + row, width - width / 2 - 5, row - 6),
+            T("player.gold-add"), GiveGold);
         Pair(batch, x, y + row * 2, width, row, T("player.heal"), () => { player.health = player.maxHealth; status = T("player.healed"); },
             T("player.energy"), () => { player.Stamina = player.MaxStamina; status = T("player.energized"); });
         Pair(batch, x, y + row * 3, width, row, T("player.keep-health", new { state = OnOff(mod.KeepHealthy) }), () => mod.KeepHealthy = !mod.KeepHealthy,
@@ -184,17 +244,15 @@ internal sealed partial class TrainerMenu : IClickableMenu
     {
         RefreshItems();
         int searchWidth = width * 2 / 5;
-        search.X = x;
-        search.Y = y;
-        search.Width = searchWidth;
-        search.Draw(batch);
+        DrawInput(batch, search, x, y, searchWidth);
         if (search.Text.Length == 0 && !search.Selected)
             Text(batch, T("items.search"), x + 10, y + 8, Surface, searchWidth - 20);
 
         int optionX = x + searchWidth + 9;
         int optionWidth = (width - searchWidth - 27) / 3;
-        Button(batch, new Rectangle(optionX, y, optionWidth, row - 5), T("items.quantity", new { count = quantity }), () =>
-            quantity = quantity switch { 1 => 10, 10 => 50, 50 => 100, 100 => 999, _ => 1 });
+        int quantityLabelWidth = optionWidth / 3;
+        Text(batch, T("items.quantity"), optionX, y + 8, Muted, quantityLabelWidth - 4);
+        DrawInput(batch, itemAmount, optionX + quantityLabelWidth, y, optionWidth - quantityLabelWidth);
         Button(batch, new Rectangle(optionX + optionWidth + 6, y, optionWidth, row - 5),
             T(QualityNames[qualityIndex]), () => qualityIndex = (qualityIndex + 1) % Qualities.Length);
         Button(batch, new Rectangle(optionX + 2 * (optionWidth + 6), y, optionWidth, row - 5), T("items.clear"),
@@ -216,7 +274,14 @@ internal sealed partial class TrainerMenu : IClickableMenu
         Button(batch, new Rectangle(x, controlsY, 68, row - 5), "<", () => MoveItems(-ItemRows));
         Button(batch, new Rectangle(x + width - 68, controlsY, 68, row - 5), ">", () => MoveItems(ItemRows));
         string range = results.Length == 0 ? T("items.zero") : T("items.range", new { start = itemOffset + 1, end = Math.Min(itemOffset + ItemRows, results.Length), total = results.Length });
-        Text(batch, range, x + 82, controlsY + 4, Muted, width - 164);
+        int filterWidth = mod.ExpandedVersion is null ? 0 : Math.Min(width / 3, 190);
+        Text(batch, range, x + 82, controlsY + 4, Muted, width - 164 - filterWidth);
+        if (filterWidth > 0)
+        {
+            Button(batch, new Rectangle(x + width - 74 - filterWidth, controlsY, filterWidth, row - 5),
+                T(expandedItemsOnly ? "mods.filter.expanded" : "mods.filter.all"),
+                () => { expandedItemsOnly = !expandedItemsOnly; lastQuery = null; }, expandedItemsOnly);
+        }
     }
 
     private void DrawFarm(SpriteBatch batch, int x, int y, int width, int row)
@@ -234,6 +299,9 @@ internal sealed partial class TrainerMenu : IClickableMenu
     private void DrawProgress(SpriteBatch batch, int x, int y, int width, int row)
     {
         Text(batch, T("progress.heading"), x, y + 6, Mint, width);
+        int amountX = x + width * 2 / 3;
+        Text(batch, T("progress.amount"), x + width / 2, y + 6, Muted, width / 6 - 8);
+        DrawInput(batch, experienceAmount, amountX, y, x + width - amountX);
         Farmer player = Game1.player;
         for (int i = 0; i < Skills.Length; i++)
         {
@@ -263,11 +331,15 @@ internal sealed partial class TrainerMenu : IClickableMenu
         int hearts = Game1.player.getFriendshipHeartLevelForNPC(friend.Name);
         Text(batch, T("friends.hearts", new { name = friend.displayName, hearts }), x, y + 6, Gold, width);
         Pair(batch, x, y + row, width, row, "<", () => MoveFriend(-1), ">", () => MoveFriend(1));
-        Button(batch, new Rectangle(x, y + row * 2, width, row - 6), T("friends.gain"), () =>
+        DrawInput(batch, friendshipAmount, x, y + row * 2, width / 2 - 5);
+        Button(batch, new Rectangle(x + width / 2 + 5, y + row * 2, width - width / 2 - 5, row - 6), T("friends.gain"), () =>
         {
+            if (!TryReadAmount(friendshipAmount, out int amount))
+                return;
+
             var friendship = Game1.player.friendshipData[friend.Name];
             int before = friendship.Points;
-            Game1.player.changeFriendship(250, friend);
+            Game1.player.changeFriendship((int)Math.Min(amount, (long)int.MaxValue - before), friend);
             status = T("friends.changed", new { name = friend.displayName, points = (friendship.Points - before).ToString("+#;-#;0") });
         });
     }
@@ -278,7 +350,11 @@ internal sealed partial class TrainerMenu : IClickableMenu
             friendIndex = (friendIndex + amount + friends.Length) % friends.Length;
     }
 
-    private void GiveGold(int amount) => status = T("player.gold-given", new { amount = ModEntry.AddGold(amount).ToString("N0") });
+    private void GiveGold()
+    {
+        if (TryReadAmount(goldAmount, out int amount))
+            status = T("player.gold-given", new { amount = ModEntry.AddGold(amount).ToString("N0") });
+    }
 
     private string OnOff(bool active) => active ? T("state.on") : T("state.off");
 
@@ -297,7 +373,10 @@ internal sealed partial class TrainerMenu : IClickableMenu
 
     private void GainExperience(int skill)
     {
-        int added = Math.Min(1_000, 15_000 - Game1.player.experiencePoints[skill]);
+        if (!TryReadAmount(experienceAmount, out int amount))
+            return;
+
+        int added = Math.Min(amount, 15_000 - Game1.player.experiencePoints[skill]);
         if (added <= 0)
         {
             status = T("progress.cap", new { skill = T(Skills[skill]) });
@@ -325,9 +404,15 @@ internal sealed partial class TrainerMenu : IClickableMenu
 
     private void Warp(string location, int x, int y)
     {
-        if (Game1.getLocationFromName(location) == null)
+        GameLocation? destination = Game1.getLocationFromName(location);
+        if (destination is null)
         {
             status = T("world.no-destination");
+            return;
+        }
+        if (!IsWalkable(destination, x, y))
+        {
+            status = T("mods.blocked");
             return;
         }
 
@@ -341,7 +426,9 @@ internal sealed partial class TrainerMenu : IClickableMenu
         if (query == lastQuery)
             return;
 
-        results = GetCatalog().Where(data => MatchesItem(data, query)).ToArray();
+        results = GetCatalog()
+            .Where(data => (!expandedItemsOnly || IsExpandedItem(data.ItemId)) && MatchesItem(data, query))
+            .ToArray();
         lastQuery = query;
         itemOffset = 0;
     }
@@ -368,16 +455,27 @@ internal sealed partial class TrainerMenu : IClickableMenu
 
     private void MoveItems(int amount) => itemOffset = Math.Clamp(itemOffset + amount, 0, Math.Max(0, results.Length - ItemRows));
 
-    private void Spawn(ParsedItemData data) => Spawn(data, quantity, Qualities[qualityIndex]);
+    private void Spawn(ParsedItemData data)
+    {
+        if (TryReadAmount(itemAmount, out int count))
+            Spawn(data, count, Qualities[qualityIndex]);
+    }
 
     private void Spawn(ParsedItemData data, int count, int quality)
     {
-        Item item = ItemRegistry.Create(data.QualifiedItemId, 1, quality);
-        item.Stack = Math.Min(count, item.maximumStackSize());
-        int requested = item.Stack;
-        Item? remaining = Game1.player.addItemToInventory(item);
-        int added = requested - (remaining?.Stack ?? 0);
-        status = added == 0 ? T("items.full") : T("items.added", new { count = added, name = data.DisplayName }) + (added < requested ? T("items.partial") : "");
+        int added = 0;
+        while (added < count)
+        {
+            Item item = ItemRegistry.Create(data.QualifiedItemId, 1, quality);
+            int requested = Math.Min(count - added, Math.Max(1, item.maximumStackSize()));
+            item.Stack = requested;
+            Item? remaining = Game1.player.addItemToInventory(item);
+            added += requested - (remaining?.Stack ?? 0);
+            if (remaining is not null)
+                break;
+        }
+
+        status = added == 0 ? T("items.full") : T("items.added", new { count = added, name = data.DisplayName }) + (added < count ? T("items.partial") : "");
     }
 
     private void TendCrops(bool grow)
@@ -417,17 +515,20 @@ internal sealed partial class TrainerMenu : IClickableMenu
     {
         bool hovered = bounds.Contains(Game1.getMouseX(), Game1.getMouseY());
         Fill(batch, bounds, hovered || active ? Hover : Surface);
-        Fill(batch, new Rectangle(bounds.X, bounds.Bottom - 2, bounds.Width, 2), active ? Mint : Border);
+        if (active)
+            Fill(batch, new Rectangle(bounds.X, bounds.Y, 3, bounds.Height), Mint, 0.87f);
+        else
+            Fill(batch, new Rectangle(bounds.X, bounds.Bottom - 1, bounds.Width, 1), Border, 0.87f);
         buttons.Add((bounds, click));
     }
 
-    private static void Fill(SpriteBatch batch, Rectangle bounds, Color color) =>
-        batch.Draw(Game1.staminaRect, bounds, null, color, 0f, Vector2.Zero, SpriteEffects.None, 0.86f);
+    private static void Fill(SpriteBatch batch, Rectangle bounds, Color color, float depth = 0.86f) =>
+        batch.Draw(Game1.staminaRect, bounds, null, color, 0f, Vector2.Zero, SpriteEffects.None, depth);
 
     private static void Text(SpriteBatch batch, string text, int x, int y, Color color, int width, bool large = false)
     {
         SpriteFont font = large ? Game1.dialogueFont : Game1.smallFont;
-        float scale = Math.Min(1f, width / Math.Max(1f, font.MeasureString(text).X));
+        float scale = Math.Clamp(width / Math.Max(1f, font.MeasureString(text).X), 0f, 1f);
         batch.DrawString(font, text, new Vector2(x, y), color, 0f, Vector2.Zero, scale, SpriteEffects.None, 0.9f);
     }
 }

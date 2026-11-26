@@ -24,6 +24,7 @@ $references = @(
     'StardewValley.GameData.dll'
     'MonoGame.Framework.dll'
     'xTile.dll'
+    'smapi-internal\SMAPI.Toolkit.CoreInterfaces.dll'
 ) | ForEach-Object { Join-Path $GamePath $_ }
 $references += $SmapiAssembly
 foreach ($reference in $references) {
