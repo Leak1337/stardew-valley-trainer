@@ -1,34 +1,34 @@
 # Stardew Valley Trainer
 
-[English instructions](README.en.md)
+[Deutsche Anleitung](README.de.md)
 
-Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspieler mit **F5** das Menü. Der Trainer folgt der Spielsprache und unterstützt Deutsch und Englisch.
+An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a single-player save to open the menu. The trainer follows your game language and supports English and German.
 
-| Menü | Funktionen |
+| Tab | Features |
 | --- | --- |
-| Spieler | Gold, Gesundheit, Ausdauer und Rucksackplätze |
-| Welt | Spieluhr anhalten, Sonne oder Regen für morgen einstellen und zu Orten im Grundspiel reisen |
-| Items | Item-Katalog mit Suche nach Name oder ID, Menge und Qualität |
-| Farm | Felder gießen, Kulturen erntereif machen, Gießkannen auffüllen und Tiere am aktuellen Ort füttern oder streicheln |
-| Fortschritt | Erfahrung für die fünf Fähigkeiten des Grundspiels hinzufügen |
-| Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
-| Geschenke | Aufenthaltsort, Geburtstag, Herzen, Geschenkzähler und Geschenkvorlieben je Bewohner. Empfohlene Items einzeln ins Inventar legen |
-| Rezepte | Gelernte Rezepte zählen und Koch- oder Handwerksrezepte freischalten |
+| Player | Gold, health, energy, and backpack slots |
+| World | Freeze the clock, set tomorrow's weather to sunny or rainy, and travel to base-game locations |
+| Items | Search by name or item ID, then select quantity and quality |
+| Farm | Water planted soil, mature crops, refill watering cans, and feed or pet animals at your current location |
+| Skills | Add XP to the five base-game skills |
+| Friendship | Add friendship points for villagers you've already met |
+| Gifts | See each villager's location, birthday, hearts, gift counts, and gift preferences. Add individual items to your inventory |
+| Recipes | Count learned recipes and unlock cooking or crafting recipes |
 
-Unter **Geschenke** wechselst du oben zwischen Bewohnern und unten zwischen Gegenständen. **Liebt** zeigt die besten Geschenke. Die Bewertungen stammen aus dem Spiel. Ein Klick auf **+1 ins Inventar** gibt dir den Gegenstand, damit du ihn selbst verschenken kannst.
+Under **Gifts**, use the top arrows to switch villagers and the bottom arrows to browse items. **Loves** shows their best gifts. Ratings come from the game. Select **+1 to inventory** to get an item you can give to the villager.
 
-Die Zeitsperre endet am nächsten Morgen. Besondere Spieltage können das eingestellte Wetter überschreiben. Dauerhafte Änderungen werden beim regulären Speichern übernommen.
+The clock resumes the next morning. Special days can override the selected weather. Permanent changes take effect in your save when the game next saves normally.
 
-## Bauen und installieren
+## Build and install
 
-1. Installiere [SMAPI](https://smapi.io/) für deine Stardew-Valley-Version. Der Trainer wurde gegen Stardew Valley 1.6.15 und SMAPI 4.1.10 gebaut.
-2. Baue den Trainer mit einem installierten .NET SDK. Setze `-GamePath` auf deinen Spielordner.
+1. Install [SMAPI](https://smapi.io/) for your Stardew Valley version. This trainer was built against Stardew Valley 1.6.15 and SMAPI 4.1.10.
+2. With a .NET SDK installed, build the trainer and set `-GamePath` to your game directory.
 
    ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File .\Build.ps1 -GamePath 'C:\Pfad\zu\Stardew Valley'
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\Build.ps1 -GamePath 'C:\Path\to\Stardew Valley'
    ```
 
-3. Kopiere den Ordner `dist\StardewValleyTrainer` in `Mods` im Spielverzeichnis.
-4. Starte `StardewModdingAPI.exe` und lade einen Einzelspieler-Spielstand.
+3. Copy `dist\StardewValleyTrainer` into the game's `Mods` directory.
+4. Start `StardewModdingAPI.exe` and load a single-player save.
 
-Die geplante nächste Ausbaustufe ist die Unterstützung für Stardew Valley Expanded.
+Stardew Valley Expanded support is planned for a future update.

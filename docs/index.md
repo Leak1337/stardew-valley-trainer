@@ -1,23 +1,21 @@
 ---
 title: Stardew Valley Trainer
-description: Ingame-Trainer für Stardew Valley 1.6.15
+description: In-game trainer for Stardew Valley 1.6.15
 ---
 
-[English](english.html)
+[Deutsch](german.html)
 
-Öffne mit **F5** das Trainer-Menü direkt im geladenen Einzelspieler-Spielstand. Das Menü folgt der Spielsprache und unterstützt Deutsch und Englisch.
+Press **F5** in a loaded single-player save to open the trainer. The menu follows your game language and supports English and German.
 
-| Bereich | Funktionen |
+| Tab | Features |
 | --- | --- |
-| Spieler | Gold, Gesundheit, Ausdauer und Rucksackplätze |
-| Welt | Spieluhr anhalten, Wetter für morgen einstellen und schnellreisen |
-| Items | Gegenstände nach Name oder ID suchen und ins Inventar legen |
-| Farm | Felder gießen, Kulturen erntereif machen, Gießkannen auffüllen und Tiere versorgen |
-| Fortschritt | Erfahrung für Landwirtschaft, Angeln, Bergbau, Sammeln und Kampf |
-| Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
-| Geschenke | Beste Geschenke, Geburtstag, Aufenthaltsort, Herzen und Geschenkzähler je Bewohner ansehen |
-| Rezepte | Koch- und Handwerksrezepte freischalten |
+| Player | Gold, health, energy, and backpack slots |
+| World | Freeze time, set tomorrow's weather, and fast travel |
+| Items | Search for items by name or ID and add them to your inventory |
+| Farm | Water soil, mature crops, refill watering cans, and care for animals |
+| Skills | Add XP to the five base-game skills |
+| Friendship | Add friendship points for villagers you've already met |
+| Gifts | See each villager's best gifts, birthday, location, hearts, and gift counts |
+| Recipes | Unlock cooking and crafting recipes |
 
-Der Trainer wurde für Stardew Valley **1.6.15** mit **SMAPI 4.1.10** gebaut. Der Quellcode und die Anleitung zum Bauen und Installieren stehen im [GitHub-Repository](https://github.com/Leak1337/stardew-valley-trainer#bauen-und-installieren).
-
-Als Nächstes ist Unterstützung für **Stardew Valley Expanded** geplant.
+The trainer was built for Stardew Valley **1.6.15** and **SMAPI 4.1.10**. Find the [source and installation instructions on GitHub](https://github.com/Leak1337/stardew-valley-trainer#build-and-install).
