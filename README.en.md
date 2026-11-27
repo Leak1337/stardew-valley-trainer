@@ -6,6 +6,6 @@ Extract the ZIP into `Mods` and start Stardew Valley through SMAPI.
 
 [English README](README.md)
 
-## Attribution
+## License and attribution
 
-If you have permission to reuse code written by Leak1337 from this repository, please include this credit in your documentation: [Leak1337](https://github.com/Leak1337) ([stardew-valley-trainer](https://github.com/Leak1337/stardew-valley-trainer)).
+Code authored by Leak1337 in this repository is available under the [Apache License 2.0](LICENSE). When redistributing the code or a derivative, include a copy of the license and preserve the applicable origin notice from [NOTICE](NOTICE) as required by section 4. Separately licensed material remains subject to its own terms.

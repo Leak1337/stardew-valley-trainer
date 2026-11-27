@@ -71,6 +71,6 @@ Die Zeitsperre endet am nächsten Morgen. Besondere Spieltage können das einges
 3. Kopiere den Ordner `dist\StardewValleyTrainer` in `Mods` im Spielverzeichnis.
 4. Starte `StardewModdingAPI.exe` und lade einen Einzelspieler-Spielstand.
 
-## Namensnennung
+## Lizenz und Namensnennung
 
-Wenn du Code von Leak1337 aus diesem Repository mit Erlaubnis weiterverwendest, nenne bitte [Leak1337](https://github.com/Leak1337) ([stardew-valley-trainer](https://github.com/Leak1337/stardew-valley-trainer)) in deiner Dokumentation.
+Der in diesem Repository von Leak1337 geschriebene Code steht unter der [Apache License 2.0](LICENSE). Wenn du den Code oder eine bearbeitete Fassung weitergibst, lege den Lizenztext bei und übernimm den zutreffenden Herkunftshinweis aus [NOTICE](NOTICE) gemäß Abschnitt 4. Für separat lizenziertes Material gelten dessen eigene Bedingungen.

@@ -71,6 +71,6 @@ The clock resumes the next morning. Special days can override the selected weath
 3. Copy `dist\StardewValleyTrainer` into the game's `Mods` directory.
 4. Start `StardewModdingAPI.exe` and load a single-player save.
 
-## Attribution
+## License and attribution
 
-If you have permission to reuse code written by Leak1337 from this repository, please include this credit in your documentation: [Leak1337](https://github.com/Leak1337) ([stardew-valley-trainer](https://github.com/Leak1337/stardew-valley-trainer)).
+Code authored by Leak1337 in this repository is available under the [Apache License 2.0](LICENSE). When redistributing the code or a derivative, include a copy of the license and preserve the applicable origin notice from [NOTICE](NOTICE) as required by section 4. Separately licensed material remains subject to its own terms.
