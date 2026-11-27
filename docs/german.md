@@ -24,6 +24,6 @@ description: Ingame-Trainer für Stardew Valley 1.6.15
 
 Der Trainer benötigt nur SMAPI und liest Inhalte kompatibler Zusatzmods aus dem Spiel. Beträge für Gold, Items, EP und Freundschaftspunkte kannst du selbst eingeben.
 
-Bei geladenem Stardew Valley Expanded gibt es eigene Reiseziele und separate Schalter zum Lernen von Expanded-Rezepten.
+Stardew Valley Expanded bietet eigene Reiseziele und Inhaltsfilter. Ridgeside Village bekommt Filter für Items, Bewohner und Rezepte. Von Automate erfasste Maschinen werden beim Fertigstellen übersprungen. Details stehen in der [Kompatibilitätsliste](https://github.com/Leak1337/stardew-valley-trainer/blob/main/README.de.md#optionale-mod-kompatibilität).
 
 Der Trainer wurde für Stardew Valley **1.6.15** mit **SMAPI 4.1.10** gebaut. Der Quellcode und die Anleitung zum Bauen und Installieren stehen im [GitHub-Repository](https://github.com/Leak1337/stardew-valley-trainer/blob/main/README.de.md#bauen-und-installieren).

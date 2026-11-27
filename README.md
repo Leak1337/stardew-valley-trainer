@@ -6,7 +6,7 @@ Extract the ZIP into `Mods` and start Stardew Valley through SMAPI.
 
 [Deutsche Anleitung](README.de.md)
 
-An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a single-player save to open the menu. The trainer follows your game language and supports English and German.
+An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a single-player save to open the menu. The trainer follows your game language and supports English and German. To change the key, set `MenuKey` in the trainer's `config.json` and restart the game.
 
 | Tab | Features |
 | --- | --- |
@@ -19,7 +19,7 @@ An in-game trainer for Stardew Valley 1.6.15 on Windows. Press **F5** in a singl
 | Gifts | See each villager's location, birthday, hearts, gift counts, and gift preferences. Add individual items to your inventory |
 | Recipes | Count learned recipes and unlock cooking or crafting recipes |
 | Community | Browse actual Community Center bundles, spawn required items at their required quality, complete a bundle or the center, find missing museum donations, and finish journal quests |
-| Mods | See which add-ons are loaded, save waypoints, and open Expanded's item filter when installed |
+| Mods | See loaded add-ons and their compatibility profiles, save waypoints, and browse expansion content |
 | Equipment | Change your selected tool tier, teleport to a chosen mine floor, or place a ladder down |
 | Fancy | Random emotes, a light show, nearby villager emotes, and temporary luck and magnetism boosts |
 
@@ -39,9 +39,21 @@ Under **Player**, choose a movement speed bonus from 1 to 20 and apply it. The b
 
 SMAPI is the only required game add-on. Items, villagers, gift tastes, and recipes are read from the game's loaded data, including content added or edited by compatible mods.
 
-Search **Gifts** by a villager's display name or internal name. If [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) is loaded, **Mods** shows its version and provides shortcuts to its namespaced items and supported Expanded villagers. Both screens have an **All** filter for the full loaded catalog or villager list. Other installed add-ons appear by name and version under **Detected mods**.
+Search **Gifts** by a villager's display name or internal name. When an expansion is loaded, **Items** and **Gifts** offer its own filter as well as **All**. **Recipes** can learn the recipes whose outputs belong to a selected expansion. Other installed add-ons appear by name and version under **Mods → Detected mods**.
 
-With Expanded loaded, **World → Expanded travel** uses entrances from the live maps for Blue Moon Vineyard, Shearwater Bridge, and Adventurer Summit. **Recipes** can unlock just the cooking or crafting recipes whose outputs belong to Expanded.
+### Optional mod compatibility
+
+| Mod | Trainer behavior |
+| --- | --- |
+| [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) | Item, villager, and recipe filters. Fast travel to Blue Moon Vineyard, Shearwater Bridge, and Adventurer Summit via the loaded maps. |
+| [Ridgeside Village](https://github.com/Rafseazz/Ridgeside-Village-Mod) | Filters namespaced items and recipes and villagers with Ridgeside homes. Full Ridgeside installation testing is pending. |
+| [Automate](https://github.com/Pathoschild/StardewMods/tree/develop/Automate) | **Finish running machines** skips machines returned by Automate's group API. If the API is unavailable, this action pauses until the machine groups can be checked. |
+| [UI Info Suite 2](https://github.com/Annosz/UIInfoSuite2), [NPC Map Locations](https://github.com/Bouhm/stardew-valley-mods/tree/main/NPCMapLocations), [Lookup Anything](https://www.nexusmods.com/stardewvalley/mods/541), [Chests Anywhere](https://www.nexusmods.com/stardewvalley/mods/518) | Recognized in **Detected mods**. The trainer uses its own menu and only opens during free play. |
+| [DaisyNiko's Earthy Recolour](https://www.nexusmods.com/stardewvalley/mods/5255), [Seasonal Outfits – Slightly Cuter Aesthetic](https://www.nexusmods.com/stardewvalley/mods/5450), [Visible Fish](https://www.nexusmods.com/stardewvalley/mods/8897) | Recognized in **Detected mods**. The trainer reads the live game assets and leaves those mods' rendering to them. |
+
+Recognition is based on the loaded mod's SMAPI manifest. The compatibility profile describes how the trainer interacts with the mod. Check each add-on's own SMAPI and dependency requirements.
+
+Version 1.9.0 was tested with a base-game save and in a separate profile with Expanded 1.15.11, Automate 2.4.5, UI Info Suite 2 2.3.7, Chests Anywhere 1.29.1, and Lookup Anything 1.50.0 loaded together. Ridgeside filters were tested with representative Content Patcher data. The full Ridgeside mod, NPC Map Locations, and the three visual mods were outside this playtest.
 
 You can mark up to three tiles you've reached on persistent maps, including mod maps. Waypoints are stored per save when you save the game. If the map disappears or the tile gets blocked, travel is unavailable.
 

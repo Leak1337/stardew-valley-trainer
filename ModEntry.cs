@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -10,9 +12,13 @@ namespace StardewValleyTrainer;
 public sealed class ModEntry : Mod
 {
     internal const string ExpandedId = "FlashShifter.StardewValleyExpandedCP";
+    internal const string RidgesideId = "Rafseazz.RSVCP";
+    private const string AutomateId = "Pathoschild.Automate";
     private const string WaypointsKey = "waypoints";
     internal const int WaypointCount = 3;
     private Waypoint?[]? waypoints;
+    private TrainerConfig config = new();
+    private ITrainerAutomateApi? automate;
 
     internal bool FreezeTime { get; set; }
     internal bool KeepHealthy { get; set; }
@@ -23,6 +29,8 @@ public sealed class ModEntry : Mod
 
     public override void Entry(IModHelper helper)
     {
+        config = helper.ReadConfig<TrainerConfig>();
+        helper.Events.GameLoop.GameLaunched += (_, _) => automate = helper.ModRegistry.GetApi<ITrainerAutomateApi>(AutomateId);
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
         helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
@@ -47,7 +55,7 @@ public sealed class ModEntry : Mod
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
-        if (e.Button != SButton.F5 || !CanUseTrainer)
+        if (e.Button != config.MenuKey || !CanUseTrainer || Helper.Input.IsSuppressed(e.Button))
             return;
 
         Game1.activeClickableMenu = new TrainerMenu(this);
@@ -57,6 +65,29 @@ public sealed class ModEntry : Mod
     internal string Translate(string key, object? tokens = null) => Helper.Translation.Get(key, tokens).ToString();
 
     internal string? ExpandedVersion => Helper.ModRegistry.Get(ExpandedId)?.Manifest.Version.ToString();
+    internal string? RidgesideVersion => Helper.ModRegistry.Get(RidgesideId)?.Manifest.Version.ToString();
+    internal bool HasAutomate => Helper.ModRegistry.IsLoaded(AutomateId);
+
+    internal bool TryGetAutomatedTiles(GameLocation location, out IDictionary<Vector2, int>? tiles)
+    {
+        tiles = null;
+        if (!HasAutomate)
+            return true;
+        if (automate is null || location.Map.Layers.Count == 0)
+            return false;
+
+        var layer = location.Map.Layers[0];
+        try
+        {
+            tiles = automate.GetMachineStates(location, new Rectangle(0, 0, layer.LayerWidth, layer.LayerHeight));
+            return tiles is not null;
+        }
+        catch (Exception ex)
+        {
+            Monitor.Log($"Could not read Automate's machine groups: {ex.Message}", LogLevel.Warn);
+            return false;
+        }
+    }
 
     internal void SetPlayerSpeed(int amount)
     {
@@ -71,13 +102,27 @@ public sealed class ModEntry : Mod
         }
     }
 
-    internal (string Name, string Version)[] GetDetectedMods() => Helper.ModRegistry.GetAll()
+    internal (string Name, string Version, string? Support)[] GetDetectedMods() => Helper.ModRegistry.GetAll()
         .Where(info => info.Manifest.UniqueID != ModManifest.UniqueID
             && info.Manifest.UniqueID != "SMAPI.ConsoleCommands"
             && info.Manifest.UniqueID != "SMAPI.SaveBackup")
-        .Select(info => (info.Manifest.Name, info.Manifest.Version.ToString()))
+        .Select(info => (info.Manifest.Name, info.Manifest.Version.ToString(), GetSupportLabel(info.Manifest.UniqueID, info.Manifest.UpdateKeys)))
         .OrderBy(info => info.Name, StringComparer.CurrentCultureIgnoreCase)
         .ToArray();
+
+    private static string? GetSupportLabel(string id, string[]? updateKeys)
+    {
+        if (string.Equals(id, ExpandedId, StringComparison.OrdinalIgnoreCase) || string.Equals(id, RidgesideId, StringComparison.OrdinalIgnoreCase))
+            return "mods.support-expansion";
+        if (string.Equals(id, AutomateId, StringComparison.OrdinalIgnoreCase))
+            return "mods.support-automation";
+
+        bool recognised = id.ToLowerInvariant() is "annosz.uiinfosuite2" or "bouhm.npcmaplocations"
+            or "pathoschild.lookupanything" or "pathoschild.chestsanywhere"
+            || (updateKeys?.Any(key => key.Split('@')[0].ToLowerInvariant()
+                is "nexus:239" or "nexus:541" or "nexus:518" or "nexus:5255" or "nexus:5450" or "nexus:8897") ?? false);
+        return recognised ? "mods.support-coexist" : null;
+    }
 
     internal Waypoint? GetWaypoint(int slot) => GetWaypoints()[slot];
 
@@ -123,6 +168,16 @@ public sealed class ModEntry : Mod
         if (KeepEnergized && player.Stamina >= 0)
             player.Stamina = player.MaxStamina;
     }
+}
+
+internal sealed class TrainerConfig
+{
+    public SButton MenuKey { get; set; } = SButton.F5;
+}
+
+public interface ITrainerAutomateApi
+{
+    IDictionary<Vector2, int> GetMachineStates(GameLocation location, Rectangle tileArea);
 }
 
 internal sealed class Waypoint

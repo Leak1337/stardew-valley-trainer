@@ -70,16 +70,30 @@ internal sealed partial class TrainerMenu
 
     private void FinishMachines()
     {
-        int count = 0;
-        foreach (var machine in Game1.currentLocation.Objects.Values.ToArray())
+        GameLocation location = Game1.currentLocation;
+        if (!mod.TryGetAutomatedTiles(location, out var automated))
         {
-            if (!machine.bigCraftable.Value || machine.heldObject.Value is null || machine.MinutesUntilReady <= 0 || machine.readyForHarvest.Value)
-                continue;
+            status = T("farm.automate-unavailable");
+            return;
+        }
 
-            machine.minutesElapsed(machine.MinutesUntilReady);
-            if (machine.readyForHarvest.Value)
+        int count = 0;
+        int skipped = 0;
+        foreach (var machine in location.Objects.Pairs.ToArray())
+        {
+            var item = machine.Value;
+            if (!item.bigCraftable.Value || item.heldObject.Value is null || item.MinutesUntilReady <= 0 || item.readyForHarvest.Value)
+                continue;
+            if (automated?.ContainsKey(machine.Key) == true)
+            {
+                skipped++;
+                continue;
+            }
+            item.minutesElapsed(item.MinutesUntilReady);
+            if (item.readyForHarvest.Value)
                 count++;
         }
-        status = T("farm.machines-finished", new { count });
+        status = skipped == 0 ? T("farm.machines-finished", new { count })
+            : T("farm.machines-automate", new { count, skipped });
     }
 }

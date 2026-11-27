@@ -8,13 +8,39 @@ namespace StardewValleyTrainer;
 internal sealed partial class TrainerMenu
 {
     private const string ExpandedItemPrefix = "FlashShifter.StardewValleyExpanded";
+    private const string RidgesideItemPrefix = "Rafseazz.RSVCP_";
+    private const string RidgesideMapPrefix = "Custom_Ridgeside_";
+    private enum ContentSource { All, Expanded, Ridgeside }
     private const int ModRows = 5;
-    private (string Name, string Version)[]? detectedMods;
+    private (string Name, string Version, string? Support)[]? detectedMods;
     private bool showModList;
     private int modListOffset;
 
     private static bool IsExpandedItem(string itemId) =>
         itemId.StartsWith(ExpandedItemPrefix, StringComparison.OrdinalIgnoreCase);
+
+    private static bool MatchesContentItem(string itemId, ContentSource source) => source switch
+    {
+        ContentSource.Expanded => IsExpandedItem(itemId),
+        ContentSource.Ridgeside => itemId.StartsWith(RidgesideItemPrefix, StringComparison.OrdinalIgnoreCase),
+        _ => true
+    };
+
+    private bool HasContentSources => mod.ExpandedVersion is not null || mod.RidgesideVersion is not null;
+
+    private ContentSource NextSource(ContentSource source) => source switch
+    {
+        ContentSource.All when mod.ExpandedVersion is not null => ContentSource.Expanded,
+        ContentSource.All or ContentSource.Expanded when mod.RidgesideVersion is not null => ContentSource.Ridgeside,
+        _ => ContentSource.All
+    };
+
+    private string SourceName(ContentSource source) => T(source switch
+    {
+        ContentSource.Expanded => "mods.source-expanded",
+        ContentSource.Ridgeside => "mods.source-ridgeside",
+        _ => "mods.source-all"
+    });
 
     private void DrawMods(SpriteBatch batch, int x, int y, int width, int row)
     {
@@ -26,19 +52,26 @@ internal sealed partial class TrainerMenu
         }
 
         string? expanded = mod.ExpandedVersion;
+        string? ridgeside = mod.RidgesideVersion;
         string compatibility = expanded is null
             ? T(detectedMods.Length == 0 ? "mods.standard" : "mods.generic")
             : T("mods.expanded", new { version = expanded });
+        if (ridgeside is not null)
+        {
+            string label = T("mods.ridgeside", new { version = ridgeside });
+            compatibility = expanded is null ? label : $"{compatibility}  ·  {label}";
+        }
         Text(batch, compatibility, x, y + 6, Gold, width);
-        int listButtonWidth = expanded is null ? Math.Min(width / 2, 260) : width / 3;
+        int listButtonWidth = HasContentSources ? width / 3 : Math.Min(width / 2, 260);
         Button(batch, new Rectangle(x, y + row, listButtonWidth, row - 6),
             T("mods.detected", new { count = detectedMods.Length }), () => showModList = true);
-        if (expanded is not null)
+        if (HasContentSources)
         {
+            ContentSource source = expanded is not null ? ContentSource.Expanded : ContentSource.Ridgeside;
             Button(batch, new Rectangle(x + listButtonWidth, y + row, listButtonWidth - 8, row - 6),
-                T("mods.browse-expanded"), OpenExpandedItems);
+                T("mods.browse-items", new { source = SourceName(source) }), () => OpenModItems(source));
             Button(batch, new Rectangle(x + listButtonWidth * 2, y + row, width - listButtonWidth * 2, row - 6),
-                T("mods.browse-expanded-residents"), OpenExpandedResidents);
+                T("mods.browse-residents", new { source = SourceName(source) }), () => OpenModResidents(source));
         }
         Text(batch, T("mods.waypoints"), x, y + row * 2 + 5, Mint, width);
 
@@ -72,7 +105,8 @@ internal sealed partial class TrainerMenu
         for (int i = 0; i < ModRows && i + modListOffset < mods.Length; i++)
         {
             var detected = mods[i + modListOffset];
-            Text(batch, $"{detected.Name}  ·  {detected.Version}", x, y + row * (i + 1) + 5, Ink, width);
+            string support = detected.Support is null ? "" : $"  ·  {T(detected.Support)}";
+            Text(batch, $"{detected.Name}  ·  {detected.Version}{support}", x, y + row * (i + 1) + 5, Ink, width);
         }
 
         Pair(batch, x, y + row * 6, width, row, "<",
@@ -80,9 +114,9 @@ internal sealed partial class TrainerMenu
             () => modListOffset = Math.Min(Math.Max(0, mods.Length - ModRows), modListOffset + ModRows));
     }
 
-    private void OpenExpandedItems()
+    private void OpenModItems(ContentSource source)
     {
-        expandedItemsOnly = true;
+        itemSource = source;
         search.Text = "";
         lastQuery = null;
         status = "";

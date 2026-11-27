@@ -39,9 +39,21 @@ Unter **Spieler** kannst du einen Lauftempo-Bonus von 1 bis 20 anwenden. Er wirk
 
 Der Trainer benötigt nur SMAPI. Er liest Items, Bewohner, Geschenkvorlieben und Rezepte aus den geladenen Spieldaten. Dadurch erscheinen auch Inhalte kompatibler Zusatzmods.
 
-Unter **Geschenke** kannst du nach Anzeigename oder internem Namen suchen. Wenn [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) geladen ist, zeigt **Mods** die erkannte Version an und bietet Direktlinks zu Expanded-Items mit entsprechendem ID-Präfix und zu unterstützten Expanded-Bewohnern. Unter **Alle** findest du weiterhin sämtliche geladenen Items und Bewohner. Andere Zusatzmods stehen unter **Erkannte Mods**.
+Unter **Geschenke** kannst du nach Anzeigename oder internem Namen suchen. Geladene Erweiterungen haben in **Items** und **Geschenke** einen eigenen Filter neben **Alle**. Unter **Rezepte** kannst du Rezepte der ausgewählten Erweiterung lernen. Andere Mods siehst du mit ihrer Version unter **Mods → Erkannte Mods**. Den Menü-Hotkey kannst du über `MenuKey` in der `config.json` des Trainers ändern. Standard bleibt **F5**.
 
-Mit geladenem Expanded nutzt **Welt → Expanded-Reiseziele** die Eingänge der aktuellen Karten für Blue Moon Vineyard, Shearwater Bridge und Adventurer Summit. Unter **Rezepte** kannst du gezielt Koch- oder Handwerksrezepte freischalten, die Expanded-Gegenstände herstellen.
+### Optionale Mod-Kompatibilität
+
+| Mod | Verhalten des Trainers |
+| --- | --- |
+| [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) | Item-, Bewohner- und Rezeptfilter. Schnellreise zum Blue Moon Vineyard, zur Shearwater Bridge und zum Adventurer Summit über die geladenen Karten. |
+| [Ridgeside Village](https://github.com/Rafseazz/Ridgeside-Village-Mod) | Filter für Items und Rezepte mit Ridgeside-ID sowie Bewohner mit Wohnort in Ridgeside. Der Test mit der vollständigen Erweiterung steht noch aus. |
+| [Automate](https://github.com/Pathoschild/StardewMods/tree/develop/Automate) | **Laufende Maschinen fertigstellen** überspringt Maschinen, die Automate als Teil einer Gruppe meldet. Ist die Schnittstelle nicht verfügbar, wird die Aktion ausgesetzt. |
+| [UI Info Suite 2](https://github.com/Annosz/UIInfoSuite2), [NPC Map Locations](https://github.com/Bouhm/stardew-valley-mods/tree/main/NPCMapLocations), [Lookup Anything](https://www.nexusmods.com/stardewvalley/mods/541), [Chests Anywhere](https://www.nexusmods.com/stardewvalley/mods/518) | Werden unter **Erkannte Mods** angezeigt. Der Trainer nutzt ein eigenes Menü und öffnet sich nur im freien Spiel. |
+| [DaisyNiko's Earthy Recolour](https://www.nexusmods.com/stardewvalley/mods/5255), [Seasonal Outfits – Slightly Cuter Aesthetic](https://www.nexusmods.com/stardewvalley/mods/5450), [Visible Fish](https://www.nexusmods.com/stardewvalley/mods/8897) | Werden unter **Erkannte Mods** angezeigt. Der Trainer liest die geladenen Spieldaten und lässt die Darstellung bei den jeweiligen Mods. |
+
+Die Erkennung nutzt das SMAPI-Manifest der geladenen Mod. Die Zusatzmods haben jeweils eigene SMAPI- und Installationsanforderungen.
+
+Version 1.9.0 wurde im Grundspiel sowie in einem separaten Profil mit Expanded 1.15.11, Automate 2.4.5, UI Info Suite 2 2.3.7, Chests Anywhere 1.29.1 und Lookup Anything 1.50.0 gemeinsam getestet. Die Ridgeside-Filter wurden mit repräsentativen Content-Patcher-Daten geprüft. Das vollständige Ridgeside Village, NPC Map Locations und die drei Grafikmods waren nicht Teil dieses Spieltests.
 
 Du kannst bis zu drei bereits erreichte Stellen auf dauerhaft verfügbaren Grundspiel- oder Mod-Karten markieren. Die Punkte werden beim regulären Speichern pro Spielstand übernommen. Eine fehlende Karte oder eine blockierte Stelle kann nicht als Reiseziel verwendet werden.
 

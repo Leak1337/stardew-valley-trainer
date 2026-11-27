@@ -56,7 +56,7 @@ internal sealed partial class TrainerMenu : IClickableMenu
     private int tab;
     private int itemOffset;
     private int qualityIndex;
-    private bool expandedItemsOnly;
+    private ContentSource itemSource;
     private int friendIndex;
     private NPC[]? friends;
     private const int ItemRows = 5;
@@ -306,13 +306,13 @@ internal sealed partial class TrainerMenu : IClickableMenu
         Button(batch, new Rectangle(x, controlsY, 68, row - 5), "<", () => MoveItems(-ItemRows));
         Button(batch, new Rectangle(x + width - 68, controlsY, 68, row - 5), ">", () => MoveItems(ItemRows));
         string range = results.Length == 0 ? T("items.zero") : T("items.range", new { start = itemOffset + 1, end = Math.Min(itemOffset + ItemRows, results.Length), total = results.Length });
-        int filterWidth = mod.ExpandedVersion is null ? 0 : Math.Min(width / 3, 190);
+        int filterWidth = HasContentSources ? Math.Min(width / 3, 190) : 0;
         Text(batch, range, x + 82, controlsY + 4, Muted, width - 164 - filterWidth);
         if (filterWidth > 0)
         {
             Button(batch, new Rectangle(x + width - 74 - filterWidth, controlsY, filterWidth, row - 5),
-                T(expandedItemsOnly ? "mods.filter.expanded" : "mods.filter.all"),
-                () => { expandedItemsOnly = !expandedItemsOnly; lastQuery = null; }, expandedItemsOnly);
+                T("mods.filter-source", new { source = SourceName(itemSource) }),
+                () => { itemSource = NextSource(itemSource); lastQuery = null; }, itemSource != ContentSource.All);
         }
     }
 
@@ -475,7 +475,7 @@ internal sealed partial class TrainerMenu : IClickableMenu
             return;
 
         results = GetCatalog()
-            .Where(data => (!expandedItemsOnly || IsExpandedItem(data.ItemId)) && MatchesItem(data, query))
+            .Where(data => MatchesContentItem(data.ItemId, itemSource) && MatchesItem(data, query))
             .ToArray();
         lastQuery = query;
         itemOffset = 0;

@@ -28,7 +28,7 @@ internal sealed partial class TrainerMenu
     private NPC[]? residents;
     private NPC[] matchingResidents = Array.Empty<NPC>();
     private string? lastResidentQuery;
-    private bool expandedResidentsOnly;
+    private ContentSource residentSource;
     private readonly TextBox residentSearch = CreateInput("");
     private int residentIndex;
     private int giftFilter;
@@ -43,19 +43,19 @@ internal sealed partial class TrainerMenu
             .Where(npc => npc.CanReceiveGifts())
             .OrderBy(npc => npc.displayName, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();
-        int searchWidth = mod.ExpandedVersion is null ? width : width * 2 / 3;
+        int searchWidth = HasContentSources ? width * 2 / 3 : width;
         DrawInput(batch, residentSearch, x, y, searchWidth);
         if (residentSearch.Text.Length == 0 && !residentSearch.Selected)
             Text(batch, T("gifts.search-residents"), x + 10, y + 8, Surface, searchWidth - 20);
         if (searchWidth < width)
         {
             Button(batch, new Rectangle(x + searchWidth + 8, y, width - searchWidth - 8, row - 6),
-                T(expandedResidentsOnly ? "gifts.source-expanded" : "gifts.source-all"),
+                T("gifts.filter-source", new { source = SourceName(residentSource) }),
                 () =>
                 {
-                    expandedResidentsOnly = !expandedResidentsOnly;
+                    residentSource = NextSource(residentSource);
                     lastResidentQuery = null;
-                }, expandedResidentsOnly);
+                }, residentSource != ContentSource.All);
         }
 
         RefreshResidents();
@@ -166,17 +166,25 @@ internal sealed partial class TrainerMenu
             return;
 
         matchingResidents = residents!.Where(npc =>
-            (!expandedResidentsOnly || ExpandedResidents.Contains(npc.Name))
+            MatchesResidentSource(npc)
             && (npc.displayName.Contains(query, StringComparison.CurrentCultureIgnoreCase)
                 || npc.Name.Contains(query, StringComparison.OrdinalIgnoreCase))).ToArray();
         lastResidentQuery = query;
         residentIndex = giftFilter = giftOffset = 0;
     }
 
-    private void OpenExpandedResidents()
+    private bool MatchesResidentSource(NPC npc) => residentSource switch
+    {
+        ContentSource.Expanded => ExpandedResidents.Contains(npc.Name),
+        ContentSource.Ridgeside => npc.GetData()?.Home?.Any(home =>
+            home.Location?.StartsWith(RidgesideMapPrefix, StringComparison.OrdinalIgnoreCase) == true) == true,
+        _ => true
+    };
+
+    private void OpenModResidents(ContentSource source)
     {
         residentSearch.Text = "";
-        expandedResidentsOnly = true;
+        residentSource = source;
         lastResidentQuery = null;
         status = "";
         tab = 6;

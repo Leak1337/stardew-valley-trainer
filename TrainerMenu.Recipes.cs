@@ -7,8 +7,9 @@ namespace StardewValleyTrainer;
 
 internal sealed partial class TrainerMenu
 {
-    private string[]? expandedCraftingRecipes;
-    private string[]? expandedCookingRecipes;
+    private ContentSource recipeSource;
+    private string[]? packCraftingRecipes;
+    private string[]? packCookingRecipes;
 
     private void DrawRecipes(SpriteBatch batch, int x, int y, int width, int row)
     {
@@ -25,25 +26,40 @@ internal sealed partial class TrainerMenu
         }), x, y + row * 2 + 6, Gold, width);
         Button(batch, new Rectangle(x, y + row * 3, width, row - 6), T("recipes.learn-cooking"), () => LearnRecipes(true));
         Text(batch, T("recipes.note"), x, y + row * 4 + 6, Muted, width);
-        if (mod.ExpandedVersion is not null)
+        if (HasContentSources)
         {
-            string[] crafting = expandedCraftingRecipes ??= GetExpandedRecipes(false);
-            string[] cooking = expandedCookingRecipes ??= GetExpandedRecipes(true);
-            Text(batch, T("recipes.expanded-progress", new
+            if (recipeSource == ContentSource.All)
+                recipeSource = NextSource(recipeSource);
+            string source = SourceName(recipeSource);
+            string[] crafting = packCraftingRecipes ??= GetPackRecipes(false, recipeSource);
+            string[] cooking = packCookingRecipes ??= GetPackRecipes(true, recipeSource);
+            int filterWidth = mod.ExpandedVersion is not null && mod.RidgesideVersion is not null ? width / 3 : 0;
+            Text(batch, T("recipes.pack-progress", new
             {
+                source,
                 known = CountKnownRecipes(false, crafting) + CountKnownRecipes(true, cooking),
                 total = crafting.Length + cooking.Length
-            }), x, y + row * 5 + 6, Mint, width);
-            Pair(batch, x, y + row * 6, width, row, T("recipes.expanded-crafting"), () => LearnRecipes(false, crafting),
-                T("recipes.expanded-cooking"), () => LearnRecipes(true, cooking));
+            }), x, y + row * 5 + 6, Mint, width - filterWidth - 8);
+            if (filterWidth > 0)
+            {
+                Button(batch, new Rectangle(x + width - filterWidth, y + row * 5, filterWidth, row - 6),
+                    T("mods.filter-source", new { source }), () =>
+                    {
+                        recipeSource = recipeSource == ContentSource.Expanded ? ContentSource.Ridgeside : ContentSource.Expanded;
+                        packCraftingRecipes = packCookingRecipes = null;
+                    });
+            }
+            Pair(batch, x, y + row * 6, width, row, T("recipes.pack-crafting", new { source }), () => LearnRecipes(false, crafting),
+                T("recipes.pack-cooking", new { source }), () => LearnRecipes(true, cooking));
         }
     }
 
-    private static string[] GetExpandedRecipes(bool cooking)
+    private static string[] GetPackRecipes(bool cooking, ContentSource source)
     {
         var recipes = cooking ? CraftingRecipe.cookingRecipes : CraftingRecipe.craftingRecipes;
         return recipes.Where(recipe => ArgUtility.SplitBySpace(
-                ArgUtility.Get(recipe.Value.Split('/'), CraftingRecipe.index_output, "")).Any(IsExpandedItem))
+                ArgUtility.Get(recipe.Value.Split('/'), CraftingRecipe.index_output, "")).Any(id =>
+                    MatchesContentItem(ItemRegistry.GetData(id)?.ItemId ?? id, source)))
             .Select(recipe => recipe.Key).ToArray();
     }
 
