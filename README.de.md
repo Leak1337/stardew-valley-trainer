@@ -1,5 +1,20 @@
 # Stardew Valley Trainer
 
+**[Direktdownload – StardewValleyTrainer.zip](https://github.com/Leak1337/stardew-valley-trainer/releases/latest/download/StardewValleyTrainer.zip)**
+
+Das ZIP in `Mods` entpacken und Stardew Valley über SMAPI starten.
+
+<details>
+<summary>Downloadzahlen</summary>
+
+GitHub zählt Downloads je Release-Datei.
+
+~~~sh
+gh api --paginate repos/Leak1337/stardew-valley-trainer/releases --jq '.[] | .tag_name as $tag | .assets[] | [$tag, .name, .download_count] | @tsv'
+~~~
+
+</details>
+
 [English instructions](README.md)
 
 Ein Ingame-Trainer für Stardew Valley 1.6.15 unter Windows. Öffne im Einzelspieler mit **F5** das Menü. Der Trainer folgt der Spielsprache und unterstützt Deutsch und Englisch.
