@@ -14,7 +14,7 @@ internal sealed partial class TrainerMenu
     private const int GiftRows = 2;
     private static readonly HashSet<string> ExpandedResidents = new(StringComparer.OrdinalIgnoreCase)
     {
-        "Andy", "Apples", "Claire", "Gunther", "Lance", "MarlonFay", "Martin", "Morgan",
+        "Andy", "Apples", "Claire", "Gunther", "Henchman", "Lance", "Magnus", "MarlonFay", "Martin", "Morgan",
         "Morris", "Olivia", "Scarlett", "Sophia", "Susan", "Victor"
     };
     private static readonly (int Taste, string Key)[] GiftFilters =

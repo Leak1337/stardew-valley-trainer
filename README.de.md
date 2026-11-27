@@ -41,6 +41,8 @@ Der Trainer benötigt nur SMAPI. Er liest Items, Bewohner, Geschenkvorlieben und
 
 Unter **Geschenke** kannst du nach Anzeigename oder internem Namen suchen. Wenn [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) geladen ist, zeigt **Mods** die erkannte Version an und bietet Direktlinks zu Expanded-Items mit entsprechendem ID-Präfix und zu unterstützten Expanded-Bewohnern. Unter **Alle** findest du weiterhin sämtliche geladenen Items und Bewohner. Andere Zusatzmods stehen unter **Erkannte Mods**.
 
+Mit geladenem Expanded nutzt **Welt → Expanded-Reiseziele** die Eingänge der aktuellen Karten für Blue Moon Vineyard, Shearwater Bridge und Adventurer Summit. Unter **Rezepte** kannst du gezielt Koch- oder Handwerksrezepte freischalten, die Expanded-Gegenstände herstellen.
+
 Du kannst bis zu drei bereits erreichte Stellen auf dauerhaft verfügbaren Grundspiel- oder Mod-Karten markieren. Die Punkte werden beim regulären Speichern pro Spielstand übernommen. Eine fehlende Karte oder eine blockierte Stelle kann nicht als Reiseziel verwendet werden.
 
 Die Zeitsperre endet am nächsten Morgen. Besondere Spieltage können das eingestellte Wetter überschreiben. Dauerhafte Änderungen werden beim regulären Speichern übernommen.

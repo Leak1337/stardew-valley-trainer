@@ -41,6 +41,8 @@ SMAPI is the only required game add-on. Items, villagers, gift tastes, and recip
 
 Search **Gifts** by a villager's display name or internal name. If [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) is loaded, **Mods** shows its version and provides shortcuts to its namespaced items and supported Expanded villagers. Both screens have an **All** filter for the full loaded catalog or villager list. Other installed add-ons appear by name and version under **Detected mods**.
 
+With Expanded loaded, **World → Expanded travel** uses entrances from the live maps for Blue Moon Vineyard, Shearwater Bridge, and Adventurer Summit. **Recipes** can unlock just the cooking or crafting recipes whose outputs belong to Expanded.
+
 You can mark up to three tiles you've reached on persistent maps, including mod maps. Waypoints are stored per save when you save the game. If the map disappears or the tile gets blocked, travel is unavailable.
 
 The clock resumes the next morning. Special days can override the selected weather. Permanent changes take effect in your save when the game next saves normally.

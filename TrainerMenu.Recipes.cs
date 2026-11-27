@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -6,6 +7,9 @@ namespace StardewValleyTrainer;
 
 internal sealed partial class TrainerMenu
 {
+    private string[]? expandedCraftingRecipes;
+    private string[]? expandedCookingRecipes;
+
     private void DrawRecipes(SpriteBatch batch, int x, int y, int width, int row)
     {
         Text(batch, T("recipes.crafting-count", new
@@ -21,14 +25,34 @@ internal sealed partial class TrainerMenu
         }), x, y + row * 2 + 6, Gold, width);
         Button(batch, new Rectangle(x, y + row * 3, width, row - 6), T("recipes.learn-cooking"), () => LearnRecipes(true));
         Text(batch, T("recipes.note"), x, y + row * 4 + 6, Muted, width);
+        if (mod.ExpandedVersion is not null)
+        {
+            string[] crafting = expandedCraftingRecipes ??= GetExpandedRecipes(false);
+            string[] cooking = expandedCookingRecipes ??= GetExpandedRecipes(true);
+            Text(batch, T("recipes.expanded-progress", new
+            {
+                known = CountKnownRecipes(false, crafting) + CountKnownRecipes(true, cooking),
+                total = crafting.Length + cooking.Length
+            }), x, y + row * 5 + 6, Mint, width);
+            Pair(batch, x, y + row * 6, width, row, T("recipes.expanded-crafting"), () => LearnRecipes(false, crafting),
+                T("recipes.expanded-cooking"), () => LearnRecipes(true, cooking));
+        }
     }
 
-    private static int CountKnownRecipes(bool cooking)
+    private static string[] GetExpandedRecipes(bool cooking)
+    {
+        var recipes = cooking ? CraftingRecipe.cookingRecipes : CraftingRecipe.craftingRecipes;
+        return recipes.Where(recipe => ArgUtility.SplitBySpace(
+                ArgUtility.Get(recipe.Value.Split('/'), CraftingRecipe.index_output, "")).Any(IsExpandedItem))
+            .Select(recipe => recipe.Key).ToArray();
+    }
+
+    private static int CountKnownRecipes(bool cooking, string[]? filter = null)
     {
         var recipes = cooking ? CraftingRecipe.cookingRecipes : CraftingRecipe.craftingRecipes;
         var learned = cooking ? Game1.player.cookingRecipes : Game1.player.craftingRecipes;
         int count = 0;
-        foreach (string name in recipes.Keys)
+        foreach (string name in filter ?? recipes.Keys.AsEnumerable())
         {
             if (learned.ContainsKey(name))
                 count++;
@@ -36,12 +60,12 @@ internal sealed partial class TrainerMenu
         return count;
     }
 
-    private void LearnRecipes(bool cooking)
+    private void LearnRecipes(bool cooking, string[]? filter = null)
     {
         var recipes = cooking ? CraftingRecipe.cookingRecipes : CraftingRecipe.craftingRecipes;
         var learned = cooking ? Game1.player.cookingRecipes : Game1.player.craftingRecipes;
         int count = 0;
-        foreach (string name in recipes.Keys)
+        foreach (string name in filter ?? recipes.Keys.AsEnumerable())
         {
             if (learned.ContainsKey(name))
                 continue;

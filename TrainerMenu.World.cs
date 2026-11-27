@@ -9,18 +9,53 @@ namespace StardewValleyTrainer;
 internal sealed partial class TrainerMenu
 {
     private bool showTimeAndWeather;
+    private bool showExpandedTravel;
+    private static readonly (string Key, string Map, string[] Sources)[] ExpandedDestinations =
+    {
+        ("world.expanded.vineyard", "Custom_BlueMoonVineyard", new[] { "Forest", "Beach", "Town" }),
+        ("world.expanded.bridge", "Custom_ShearwaterBridge", new[] { "Town", "Beach" }),
+        ("world.expanded.summit", "Custom_AdventurerSummit", new[] { "Mountain", "Mine" })
+    };
 
     private void DrawWorld(SpriteBatch batch, int x, int y, int width, int row)
     {
-        Pair(batch, x, y, width, row, T("world.teleport-heading"),
-            () => { showTimeAndWeather = false; status = ""; },
-            T("world.time-heading"), () => { showTimeAndWeather = true; status = ""; },
-            !showTimeAndWeather, showTimeAndWeather);
+        bool hasExpanded = mod.ExpandedVersion is not null;
+        int column = width / (hasExpanded ? 3 : 2);
+        Button(batch, new Rectangle(x, y, column - 5, row - 6), T("world.teleport-heading"),
+            () => SelectWorldPage(false, false), !showTimeAndWeather && !showExpandedTravel);
+        Button(batch, new Rectangle(x + column, y, column - 5, row - 6), T("world.time-heading"),
+            () => SelectWorldPage(true, false), showTimeAndWeather);
+        if (hasExpanded)
+        {
+            Button(batch, new Rectangle(x + 2 * column, y, width - 2 * column, row - 6), T("world.expanded-heading"),
+                () => SelectWorldPage(false, true), showExpandedTravel);
+        }
 
-        if (showTimeAndWeather)
+        if (showExpandedTravel)
+            DrawExpandedTravel(batch, x, y, width, row);
+        else if (showTimeAndWeather)
             DrawTimeAndWeather(batch, x, y, width, row);
         else
             DrawTeleport(batch, x, y, width, row);
+    }
+
+    private void SelectWorldPage(bool weather, bool expanded)
+    {
+        showTimeAndWeather = weather;
+        showExpandedTravel = expanded;
+        status = "";
+    }
+
+    private void DrawExpandedTravel(SpriteBatch batch, int x, int y, int width, int row)
+    {
+        Text(batch, T("world.expanded-note"), x, y + row + 6, Muted, width);
+        for (int i = 0; i < ExpandedDestinations.Length; i++)
+        {
+            var destination = ExpandedDestinations[i];
+            Button(batch, new Rectangle(x, y + row * (i + 2), width, row - 6), TeleportLabel(destination.Key),
+                () => WarpViaMap(destination.Map, destination.Sources));
+        }
+        Button(batch, new Rectangle(x, y + row * 5, width, row - 6), T("world.teleport-back"), ReturnFromTeleport);
     }
 
     private string TeleportLabel(string place) => T("world.teleport-to", new { place = T(place) });
@@ -115,22 +150,28 @@ internal sealed partial class TrainerMenu
 
     private void WarpViaMap(string destinationName, params string[] sources)
     {
-        GameLocation? destination = Game1.getLocationFromName(destinationName);
-        if (destination is not null)
-        {
-            foreach (string source in sources)
-            {
-                var entrance = Game1.getLocationFromName(source)?.warps.FirstOrDefault(warp =>
-                    string.Equals(warp.TargetName, destinationName, StringComparison.OrdinalIgnoreCase)
-                    && IsWalkable(destination, warp.TargetX, warp.TargetY));
-                if (entrance is null)
-                    continue;
+        if (FindMapArrival(destinationName, sources) is Point arrival)
+            Warp(destinationName, arrival.X, arrival.Y);
+        else
+            status = T("world.no-destination");
+    }
 
-                Warp(destinationName, entrance.TargetX, entrance.TargetY);
-                return;
-            }
+    private static Point? FindMapArrival(string destinationName, params string[] sources)
+    {
+        GameLocation? destination = Game1.getLocationFromName(destinationName);
+        if (destination is null)
+            return null;
+
+        foreach (string source in sources)
+        {
+            var entrance = Game1.getLocationFromName(source)?.warps.FirstOrDefault(warp =>
+                string.Equals(warp.TargetName, destinationName, StringComparison.OrdinalIgnoreCase)
+                && IsWalkable(destination, warp.TargetX, warp.TargetY)
+                && !destination.IsTileOccupiedBy(new Vector2(warp.TargetX, warp.TargetY)));
+            if (entrance is not null)
+                return new Point(entrance.TargetX, entrance.TargetY);
         }
 
-        status = T("world.no-destination");
+        return null;
     }
 }
