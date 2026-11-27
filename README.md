@@ -35,7 +35,7 @@ Under **Player**, choose a movement speed bonus from 1 to 20 and apply it. The b
 
 SMAPI is the only required game add-on. Items, villagers, gift tastes, and recipes are read from the game's loaded data, including content added or edited by compatible mods.
 
-If [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) is loaded, **Mods** shows its version and adds an item filter for Expanded's namespaced items. The **All** filter continues to show the full loaded catalog. Other installed add-ons appear by name and version under **Detected mods**.
+Search **Gifts** by a villager's display name or internal name. If [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) is loaded, **Mods** shows its version and provides shortcuts to its namespaced items and supported Expanded villagers. Both screens have an **All** filter for the full loaded catalog or villager list. Other installed add-ons appear by name and version under **Detected mods**.
 
 You can mark up to three tiles you've reached on persistent maps, including mod maps. Waypoints are stored per save when you save the game. If the map disappears or the tile gets blocked, travel is unavailable.
 

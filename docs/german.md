@@ -15,10 +15,10 @@ description: Ingame-Trainer für Stardew Valley 1.6.15
 | Farm | Felder gießen, Tiere versorgen, Zäune reparieren und Maschinen fertigstellen |
 | Fortschritt | Erfahrung für Landwirtschaft, Angeln, Bergbau, Sammeln und Kampf |
 | Freundschaft | Freundschaftspunkte für bereits bekannte Dorfbewohner hinzufügen |
-| Geschenke | Beste Geschenke, Geburtstag, Aufenthaltsort, Herzen und Geschenkzähler je Bewohner ansehen |
+| Geschenke | Bewohner suchen und beste Geschenke, Geburtstag, Aufenthaltsort, Herzen und Geschenkzähler ansehen |
 | Rezepte | Koch- und Handwerksrezepte freischalten |
 | Gemeinschaft | Bündel-Items holen, Bündel oder Gemeinschaftszentrum abschließen, Museumsstücke und Aufträge verwalten |
-| Mods | Zusatzmods ansehen, Schnellreisepunkte markieren und bei erkanntem Expanded dessen Items filtern |
+| Mods | Zusatzmods ansehen, Schnellreisepunkte markieren und bei erkanntem Expanded nach dessen Items und Bewohnern filtern |
 | Ausrüstung | Werkzeugstufen ändern, Minenebene wählen und Leitern platzieren |
 | Spielereien | Emotes, Lichtshow und temporäre Glücks- und Magneteffekte |
 

@@ -30,13 +30,15 @@ internal sealed partial class TrainerMenu
             ? T(detectedMods.Length == 0 ? "mods.standard" : "mods.generic")
             : T("mods.expanded", new { version = expanded });
         Text(batch, compatibility, x, y + 6, Gold, width);
-        int listButtonWidth = Math.Min(width / 2, 260);
+        int listButtonWidth = expanded is null ? Math.Min(width / 2, 260) : width / 3;
         Button(batch, new Rectangle(x, y + row, listButtonWidth, row - 6),
             T("mods.detected", new { count = detectedMods.Length }), () => showModList = true);
         if (expanded is not null)
         {
-            Button(batch, new Rectangle(x + listButtonWidth + 8, y + row, width - listButtonWidth - 8, row - 6),
+            Button(batch, new Rectangle(x + listButtonWidth, y + row, listButtonWidth - 8, row - 6),
                 T("mods.browse-expanded"), OpenExpandedItems);
+            Button(batch, new Rectangle(x + listButtonWidth * 2, y + row, width - listButtonWidth * 2, row - 6),
+                T("mods.browse-expanded-residents"), OpenExpandedResidents);
         }
         Text(batch, T("mods.waypoints"), x, y + row * 2 + 5, Mint, width);
 

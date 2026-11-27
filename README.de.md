@@ -35,7 +35,7 @@ Unter **Spieler** kannst du einen Lauftempo-Bonus von 1 bis 20 anwenden. Er wirk
 
 Der Trainer benötigt nur SMAPI. Er liest Items, Bewohner, Geschenkvorlieben und Rezepte aus den geladenen Spieldaten. Dadurch erscheinen auch Inhalte kompatibler Zusatzmods.
 
-Wenn [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) geladen ist, zeigt **Mods** die erkannte Version an und bietet einen Filter für Expanded-Items mit entsprechendem ID-Präfix. Mit **Alle** siehst du weiterhin den gesamten Katalog. Andere Zusatzmods stehen unter **Erkannte Mods**.
+Unter **Geschenke** kannst du nach Anzeigename oder internem Namen suchen. Wenn [Stardew Valley Expanded](https://github.com/FlashShifter/StardewValleyExpanded) geladen ist, zeigt **Mods** die erkannte Version an und bietet Direktlinks zu Expanded-Items mit entsprechendem ID-Präfix und zu unterstützten Expanded-Bewohnern. Unter **Alle** findest du weiterhin sämtliche geladenen Items und Bewohner. Andere Zusatzmods stehen unter **Erkannte Mods**.
 
 Du kannst bis zu drei bereits erreichte Stellen auf dauerhaft verfügbaren Grundspiel- oder Mod-Karten markieren. Die Punkte werden beim regulären Speichern pro Spielstand übernommen. Eine fehlende Karte oder eine blockierte Stelle kann nicht als Reiseziel verwendet werden.
 

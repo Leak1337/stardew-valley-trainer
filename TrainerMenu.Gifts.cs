@@ -5,12 +5,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.ItemTypeDefinitions;
+using StardewValley.Menus;
 
 namespace StardewValleyTrainer;
 
 internal sealed partial class TrainerMenu
 {
-    private const int GiftRows = 3;
+    private const int GiftRows = 2;
+    private static readonly HashSet<string> ExpandedResidents = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Andy", "Apples", "Claire", "Gunther", "Lance", "MarlonFay", "Martin", "Morgan",
+        "Morris", "Olivia", "Scarlett", "Sophia", "Susan", "Victor"
+    };
     private static readonly (int Taste, string Key)[] GiftFilters =
     {
         (NPC.gift_taste_love, "gifts.loved"),
@@ -20,6 +26,10 @@ internal sealed partial class TrainerMenu
         (NPC.gift_taste_hate, "gifts.hated")
     };
     private NPC[]? residents;
+    private NPC[] matchingResidents = Array.Empty<NPC>();
+    private string? lastResidentQuery;
+    private bool expandedResidentsOnly;
+    private readonly TextBox residentSearch = CreateInput("");
     private int residentIndex;
     private int giftFilter;
     private int giftOffset;
@@ -33,19 +43,35 @@ internal sealed partial class TrainerMenu
             .Where(npc => npc.CanReceiveGifts())
             .OrderBy(npc => npc.displayName, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();
-        if (residents.Length == 0)
+        int searchWidth = mod.ExpandedVersion is null ? width : width * 2 / 3;
+        DrawInput(batch, residentSearch, x, y, searchWidth);
+        if (residentSearch.Text.Length == 0 && !residentSearch.Selected)
+            Text(batch, T("gifts.search-residents"), x + 10, y + 8, Surface, searchWidth - 20);
+        if (searchWidth < width)
         {
-            Text(batch, T("gifts.no-residents"), x, y + 6, Muted, width);
+            Button(batch, new Rectangle(x + searchWidth + 8, y, width - searchWidth - 8, row - 6),
+                T(expandedResidentsOnly ? "gifts.source-expanded" : "gifts.source-all"),
+                () =>
+                {
+                    expandedResidentsOnly = !expandedResidentsOnly;
+                    lastResidentQuery = null;
+                }, expandedResidentsOnly);
+        }
+
+        RefreshResidents();
+        if (matchingResidents.Length == 0)
+        {
+            Text(batch, T("gifts.no-residents"), x, y + row + 6, Muted, width);
             return;
         }
 
-        NPC resident = residents[residentIndex];
-        Button(batch, new Rectangle(x, y, 62, row - 6), "<", () => MoveResident(-1));
-        Button(batch, new Rectangle(x + width - 62, y, 62, row - 6), ">", () => MoveResident(1));
+        NPC resident = matchingResidents[residentIndex];
+        Button(batch, new Rectangle(x, y + row, 62, row - 6), "<", () => MoveResident(-1));
+        Button(batch, new Rectangle(x + width - 62, y + row, 62, row - 6), ">", () => MoveResident(1));
         string name = resident.currentLocation == null
             ? resident.displayName
             : T("gifts.location", new { name = resident.displayName, location = resident.currentLocation.DisplayName });
-        Text(batch, $"{name}  ·  {residentIndex + 1}/{residents.Length}", x + 76, y + 6, Gold, width - 152);
+        Text(batch, $"{name}  ·  {residentIndex + 1}/{matchingResidents.Length}", x + 76, y + row + 6, Gold, width - 152);
         string birthday = GetBirthday(resident);
         string relationship = Game1.player.friendshipData.TryGetValue(resident.Name, out Friendship friendship)
             ? T("gifts.relationship", new
@@ -55,13 +81,13 @@ internal sealed partial class TrainerMenu
                 week = friendship.GiftsThisWeek
             })
             : T("gifts.not-met");
-        Text(batch, $"{birthday}   ·   {relationship}", x, y + row + 5, Ink, width);
+        Text(batch, $"{birthday}   ·   {relationship}", x, y + row * 2 + 5, Ink, width);
 
         int filterWidth = width / GiftFilters.Length;
         for (int i = 0; i < GiftFilters.Length; i++)
         {
             int filter = i;
-            Button(batch, new Rectangle(x + i * filterWidth, y + row * 2, filterWidth - 5, row - 6),
+            Button(batch, new Rectangle(x + i * filterWidth, y + row * 3, filterWidth - 5, row - 6),
                 T(GiftFilters[i].Key), () => { giftFilter = filter; giftOffset = 0; }, i == giftFilter);
         }
 
@@ -70,11 +96,11 @@ internal sealed partial class TrainerMenu
         visibleGifts = tastes.TryGetValue(selectedTaste, out var gifts) ? gifts : Array.Empty<ParsedItemData>();
         MoveGifts(0);
         if (visibleGifts.Length == 0)
-            Text(batch, T("gifts.no-items"), x, y + row * 3 + 4, Muted, width);
+            Text(batch, T("gifts.no-items"), x, y + row * 4 + 4, Muted, width);
         for (int i = 0; i < GiftRows && giftOffset + i < visibleGifts.Length; i++)
         {
             ParsedItemData item = visibleGifts[giftOffset + i];
-            int itemY = y + row * (i + 3);
+            int itemY = y + row * (i + 4);
             int actionWidth = Math.Min(170, width / 3);
             Rectangle bounds = new(x, itemY, width - actionWidth - 7, row - 5);
             Fill(batch, bounds, Surface);
@@ -124,13 +150,36 @@ internal sealed partial class TrainerMenu
 
     private void MoveResident(int amount)
     {
-        if (residents is not { Length: > 0 })
+        if (matchingResidents.Length == 0)
             return;
 
-        residentIndex = (residentIndex + amount + residents.Length) % residents.Length;
+        residentIndex = (residentIndex + amount + matchingResidents.Length) % matchingResidents.Length;
         giftFilter = 0;
         giftOffset = 0;
         status = "";
+    }
+
+    private void RefreshResidents()
+    {
+        string query = residentSearch.Text.Trim();
+        if (query == lastResidentQuery)
+            return;
+
+        matchingResidents = residents!.Where(npc =>
+            (!expandedResidentsOnly || ExpandedResidents.Contains(npc.Name))
+            && (npc.displayName.Contains(query, StringComparison.CurrentCultureIgnoreCase)
+                || npc.Name.Contains(query, StringComparison.OrdinalIgnoreCase))).ToArray();
+        lastResidentQuery = query;
+        residentIndex = giftFilter = giftOffset = 0;
+    }
+
+    private void OpenExpandedResidents()
+    {
+        residentSearch.Text = "";
+        expandedResidentsOnly = true;
+        lastResidentQuery = null;
+        status = "";
+        tab = 6;
     }
 
     private void MoveGifts(int amount) =>

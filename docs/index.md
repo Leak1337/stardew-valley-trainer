@@ -15,10 +15,10 @@ Press **F5** in a loaded single-player save to open the trainer. The menu follow
 | Farm | Water soil, care for animals, repair fences, and finish running machines |
 | Skills | Add XP to the five base-game skills |
 | Friendship | Add friendship points for villagers you've already met |
-| Gifts | See each villager's best gifts, birthday, location, hearts, and gift counts |
+| Gifts | Search villagers by name and see their best gifts, birthday, location, hearts, and gift counts |
 | Recipes | Unlock cooking and crafting recipes |
 | Community | Get bundle requirements, complete bundles or the Community Center, find museum donations, and finish quests |
-| Mods | See loaded add-ons, mark waypoints, and filter Expanded items when the mod is detected |
+| Mods | See loaded add-ons, mark waypoints, and filter Expanded items and villagers when the mod is detected |
 | Equipment | Change tool tiers, choose a mine floor, and place a ladder down |
 | Fancy | Emotes, light show, and adjustable temporary luck and magnetism boosts |
 
